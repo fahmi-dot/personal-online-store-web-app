@@ -12,7 +12,7 @@ const ProfilePage = () => {
       if (isAuthenticated) {
         try {
           const response = await getMyOrders();
-          setOrders(response.data);
+          setOrders(response.data.data);
         } catch (error) {
           console.error('Error fetching orders:', error);
         }

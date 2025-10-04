@@ -10,7 +10,7 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         const response = await getProductById(id);
-        setProduct(response.data);
+        setProduct(response.data.data);
       } catch (error) {
         console.error('Error fetching product:', error);
       }

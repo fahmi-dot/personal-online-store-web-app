@@ -4,16 +4,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [emailOrUsername, setEmailOrUsername] = useState('');
+  const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiLogin({ email, password });
-      login(response.data); 
+      const response = await apiLogin({ emailOrUsername, password });
+      login(response.data.data.token); 
       navigate('/profile');
     } catch (error) {
       console.error('Error logging in:', error);
@@ -29,16 +29,16 @@ const LoginPage = () => {
         >
           <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="emailOrUsername">
+              Email or username
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="emailOrUsername"
+              type="text"
+              placeholder="Email or username"
+              value={emailOrUsername}
+              onChange={(e) => setEmailOrUsername(e.target.value)}
             />
           </div>
           <div className="mb-6">

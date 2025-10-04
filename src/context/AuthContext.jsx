@@ -11,9 +11,8 @@ export const AuthProvider = ({ children }) => {
     const fetchProfile = async () => {
       if (token) {
         try {
-          const response = await getMyProfile(token);
-          console.log(response.data);
-          setUser(response.data);
+          const response = await getMyProfile();
+          setUser(response.data.data);
         } catch (error) {
           console.error("Error fetching profile:", error);
           setUser(null);

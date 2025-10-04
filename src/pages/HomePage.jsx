@@ -9,7 +9,7 @@ const HomePage = () => {
     const fetchProducts = async () => {
       try {
         const response = await getAllProducts();
-        setProducts(response.data);
+        setProducts(response.data.data);
       } catch (error) {
         console.error('Error fetching products:', error);
       }
