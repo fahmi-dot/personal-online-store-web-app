@@ -1,13 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { addProductToCart } from '../services/api';
 
 const ProductCard = ({ product }) => {
+  
+
+  const addToCart = async () => {
+    try {
+      const response = await addProductToCart({ productId: product.id, quantity });
+      console.log(response.data.message);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <Link to={`/product/${product.id}`}>
         <img
           className="w-full h-56 object-cover object-center"
-          src={product.photoUrl || 'https://res.cloudinary.com/dpqk0grzl/image/upload/default-photo-profile_pqodkq.png'}
+          src={product.photoUrl || 'https://via.placeholder.com/400'}
           alt={product.name}
         />
       </Link>

@@ -29,5 +29,5 @@ export const getAllCategories = () => api.get('/public/categories');
 export const getMyProfile = () => api.get(`/user/profile`);
 export const getMyOrders = () => api.get('/user/orders');
 export const createOrder = (data) => api.post('/user/orders', data);
-export const addProductToOrder = (id, productId, quantity) =>
-  api.post(`/user/orders/${id}/add-product?productId=${productId}&quantity=${quantity}`);
+export const getMyCart = () => api.get('/user/cart')
+export const addProductToCart = (data) => api.post('/user/cart', data);

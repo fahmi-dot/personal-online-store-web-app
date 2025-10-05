@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProductById } from '../services/api';
+import { getProductById, addProductToCart } from '../services/api';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(parseInt("1"));
   const { id } = useParams();
 
   useEffect(() => {
@@ -17,6 +18,15 @@ const ProductDetailPage = () => {
     };
     fetchProduct();
   }, [id]);
+  
+  const addToCart = async () => {
+    try {
+      const response = await addProductToCart({ productId: id, quantity });
+      console.log(response.data.message);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
 
   if (!product) {
     return <div>Loading...</div>;
@@ -37,7 +47,7 @@ const ProductDetailPage = () => {
           <p className="text-gray-600 mb-4">{product.description}</p>
           <div className="flex items-center justify-between">
             <span className="text-gray-800 font-bold text-3xl">${product.price}</span>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button onClick={ addToCart } className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               Add to Cart
             </button>
           </div>

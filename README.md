@@ -1,12 +1,51 @@
-# React + Vite
+# Personal Online Store Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal online store web application built with React, Vite, Tailwind CSS, and Redux Toolkit for state management.
 
-Currently, two official plugins are available:
+## Features
+-   **User Authentication:** Registration, login, and logout.
+-   **User Profile:** View profile details and order list.
+-   **Product List:** Displays various products.
+-   **Product Details:** View detailed information for each product.
+-   **Navigation:** Uses `react-router-dom` for navigation between pages.
+-   **Global State Management:** Uses Redux Toolkit to manage application state centrally, especially for authentication.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Technologies Used
+-   **Frontend:** React.js
+-   **Build Tool:** Vite
+-   **Styling:** Tailwind CSS
+-   **State Management:** Redux Toolkit & React Redux
+-   **Routing:** React Router DOM
+-   **HTTP Client:** Axios
 
-## Expanding the ESLint configuration
+## Installation
+Follow these steps to install and run the project locally:
+1.  **Clone the repository:**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+    ```bash
+    git clone <YOUR_REPOSITORY_URL>
+    cd "New Personal Online Store Web"
+    ```
+
+2.  **Install dependencies:**
+    
+    ```bash
+    npm install
+    ```
+
+## Usage
+### To run the application in development mode:
+
+```bash
+npm run dev
+```
+
+The application will run at `http://localhost:5173` (or another available port).
+
+### To build the application for production:
+
+```bash
+npm run build
+```
+
+This will create a `dist` folder with the files ready for deployment.
