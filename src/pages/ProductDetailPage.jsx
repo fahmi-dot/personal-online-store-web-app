@@ -4,7 +4,7 @@ import { getProductById, addProductToCart } from '../services/api';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
-  const [quantity, setQuantity] = useState(parseInt("1"));
+  const [quantity, setQuantity] = useState(1);
   const { id } = useParams();
 
   useEffect(() => {
@@ -18,11 +18,10 @@ const ProductDetailPage = () => {
     };
     fetchProduct();
   }, [id]);
-  
-  const addToCart = async () => {
+
+  const handleAddToCart = async () => {
     try {
-      const response = await addProductToCart({ productId: id, quantity });
-      console.log(response.data.message);
+      await addProductToCart({ productId: id, quantity });
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -33,24 +32,38 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="md:flex">
-        <div className="md:flex-shrink-0">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
           <img
-            className="h-full w-full object-cover md:w-96"
-            src={product.photoUrl || 'https://via.placeholder.com/400'}
+            className="w-full h-auto object-cover object-center rounded-lg shadow-md"
+            src={'https://res.cloudinary.com/dpqk0grzl/image/upload/v1751614337/default-photo-profile_pqodkq.png' || product.photoUrl}
             alt={product.name}
           />
         </div>
-        <div className="p-8">
-          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-          <p className="text-gray-600 mb-4">{product.description}</p>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-800 font-bold text-3xl">${product.price}</span>
-            <button onClick={ addToCart } className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Add to Cart
-            </button>
+        <div>
+          <h1 className="text-3xl font-bold mb-4 text-gray-800 uppercase">{product.name}</h1>
+          <p className="text-gray-800 font-semibold text-xl mb-4">${product.price}</p>
+          <h1 className="text-2xl font-bold mb-4 text-gray-800 uppercase">Product Description</h1>
+          <p className="text-gray-600 mb-6">{product.description}</p>
+          <div className="flex items-center mb-6">
+            <label htmlFor="quantity" className="mr-4 text-gray-700 font-bold uppercase">Quantity:</label>
+            <input
+              type="number"
+              id="quantity"
+              name="quantity"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(parseInt(e.target.value))}
+              className="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
           </div>
+          <button
+            onClick={handleAddToCart}
+            className="bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>

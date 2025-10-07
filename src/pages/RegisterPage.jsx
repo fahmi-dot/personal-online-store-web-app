@@ -19,70 +19,75 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <form
-          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-          onSubmit={handleSubmit}
-        >
-          <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-              Username
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUserame(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="******************"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <h6 className="text-gray-700 text-sm font-medium text-center mb-2">
-            Have an account?
-            <Link
-                to="/login"
-                className="text-gray-500 hover:text-gray-700 px-2"
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-3xl font-bold mb-3 text-gray-800 uppercase">Welcome to Pahmi.co</h2>
+          <div className="border-t-2 border-primary mb-3 w-full"></div>
+          
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold mb-3 text-gray-800 uppercase">Register</h2>
+          <div className="border-t-2 border-primary mb-3 w-full"></div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="flex text-gray-700 text-lg font-bold mb-2" htmlFor="username">
+                Username
+                <p className="text-red-700">*</p>
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="username"
+                type="text"
+                value={username}
+                placeholder="Username"
+                onChange={(e) => setUserame(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="flex text-gray-700 text-lg font-bold mb-2" htmlFor="email">
+                Email
+                <p className="text-red-700">*</p>
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="email"
+                type="email"
+                value={email}
+                placeholder="Email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-6">
+              <label className="flex text-gray-700 text-lg font-bold mb-2" htmlFor="password">
+                Password
+                <p className="text-red-700">*</p>
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="password"
+                type="password"
+                value={password}
+                placeholder="******************"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="text-gray-700 text-center mb-5">
+              Have an account?
+              <Link to="/login" className="text-accent font-semibold hover:text-red-700 px-2">
+                Log in
+              </Link>
+            </div>
+            <div>
+              <button
+                className="w-full bg-accent hover:bg-red-700 text-white font-bold py-2 px-4 uppercase rounded focus:outline-none focus:shadow-outline"
+                type="submit"
               >
-              Log in
-            </Link>
-          </h6>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Register
-            </button>
-          </div>
-        </form>
+                Register
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

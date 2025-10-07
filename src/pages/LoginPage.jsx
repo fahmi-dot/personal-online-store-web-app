@@ -21,57 +21,65 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="w-full max-w-md">
-        <form
-          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-          onSubmit={handleSubmit}
-        >
-          <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="emailOrUsername">
-              Email or username
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="emailOrUsername"
-              type="text"
-              placeholder="Email or username"
-              value={emailOrUsername}
-              onChange={(e) => setEmailOrUsername(e.target.value)}
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="******************"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <h6 className="text-gray-700 text-sm font-medium text-center mb-2">
-            Don't have an account?
-            <Link
-                to="/register"
-                className="text-gray-500 hover:text-gray-700 px-2"
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h2 className="text-3xl font-bold mb-3 text-gray-800 uppercase">Login</h2>
+          <div className="border-t-2 border-primary mb-3 w-full"></div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="flex text-gray-700 text-lg font-bold mb-2" htmlFor="emailOrUsername">
+                Email or username
+                <p className="text-red-700">*</p>
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="emailOrUsername"
+                type="text"
+                value={emailOrUsername}
+                placeholder="Enter your email or username"
+                onChange={(e) => setEmailOrUsername(e.target.value)}
+              />
+            </div>
+            <div className="mb-6">
+              <label className="flex text-gray-700 text-lg font-bold mb-2" htmlFor="password">
+                Password
+                <p className="text-red-700">*</p>
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="password"
+                type="password"
+                value={password}
+                placeholder="******************"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="text-gray-700 text-end mb-5">
+              <Link to="/forgot-password"  className="text-accent font-semibold hover:text-red-700">
+                Forgot password?
+              </Link>
+            </div>
+            <div>
+              <button
+                className="w-full bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
               >
-              Sign up
-            </Link>
-          </h6>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Sign In
-            </button>
-          </div>
-        </form>
+                Log in
+              </button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold mb-3 text-gray-800 uppercase">Register</h2>
+          <div className="border-t-2 border-primary mb-3 w-full"></div>
+          <p className="text-gray-700 text-lg mb-5">
+            Registering for this site allows you to access your order status and history.
+          </p>
+          <Link to="/register" className="bg-accent hover:bg-red-700 text-white font-bold  uppercase py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Register
+          </Link>
+        </div>
       </div>
     </div>
   );

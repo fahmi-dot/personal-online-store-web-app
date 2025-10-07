@@ -12,33 +12,51 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-primary shadow-md">
+      <div className="container mx-auto py-2 px-2 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <Link to="/" className="text-2xl font-bold text-gray-800">
-              Online Store
+            <Link to="/" className="text-4xl font-bold text-secondary uppercase">
+              Pahmi.co
             </Link>
           </div>
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-10 flex items-baseline space-x-5">
               <Link
                 to="/"
-                className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
               >
                 Home
+              </Link>
+              <Link
+                to="/product"
+                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+              >
+                Product
+              </Link>
+              <Link
+                to="/gallery"
+                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+              >
+                Gallery
+              </Link>
+              <Link
+                to="/about"
+                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+              >
+                About
               </Link>
               {isAuthenticated ? (
                 <>
                   <Link
                     to="/profile"
-                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
                   >
                     {user ? `Hi, ${user.username}` : 'Profile'}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
                   >
                     Logout
                   </button>
@@ -46,7 +64,7 @@ const Navbar = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
                 >
                   Sign In
                 </Link>
