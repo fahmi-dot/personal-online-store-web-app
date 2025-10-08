@@ -33,7 +33,7 @@ const LoginPage = () => {
                 <p className="text-red-700">*</p>
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="emailOrUsername"
                 type="text"
                 value={emailOrUsername}
@@ -47,7 +47,7 @@ const LoginPage = () => {
                 <p className="text-red-700">*</p>
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 type="password"
                 value={password}
@@ -62,7 +62,7 @@ const LoginPage = () => {
             </div>
             <div>
               <button
-                className="w-full bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="w-full bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 focus:outline-none focus:shadow-outline"
                 type="submit"
               >
                 Log in
@@ -76,7 +76,7 @@ const LoginPage = () => {
           <p className="text-gray-700 text-lg mb-5">
             Registering for this site allows you to access your order status and history.
           </p>
-          <Link to="/register" className="bg-accent hover:bg-red-700 text-white font-bold  uppercase py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          <Link to="/register" className="bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 focus:outline-none focus:shadow-outline">
             Register
           </Link>
         </div>

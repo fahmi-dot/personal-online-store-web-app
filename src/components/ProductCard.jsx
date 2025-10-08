@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="bg-secondary shadow-md rounded-lg overflow-hidden">
+    <div className="bg-secondary shadow-lg overflow-hidden">
       <Link to={`/product/${product.id}`}>
         <img
-          className="w-full h-56 object-cover object-center"
+          className="w-full object-cover object-center"
           src={'https://res.cloudinary.com/dpqk0grzl/image/upload/v1751614337/default-photo-profile_pqodkq.png' || product.photoUrl}
           alt={product.name}
         />

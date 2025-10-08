@@ -11,6 +11,9 @@ export default {
         'secondary': '#ffffff',
         'accent': '#ff0000',
       },
+      fontFamily: {
+        'sans': ['Montserrat', 'sans-serif'],
+      },
     },
   },
   plugins: [],

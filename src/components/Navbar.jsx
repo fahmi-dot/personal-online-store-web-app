@@ -13,7 +13,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-primary shadow-md">
-      <div className="container mx-auto py-2 px-2 sm:px-6 lg:px-8">
+      <div className="py-2 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
             <Link to="/" className="text-4xl font-bold text-secondary uppercase">
@@ -24,47 +24,39 @@ const Navbar = () => {
             <div className="ml-10 flex items-baseline space-x-5">
               <Link
                 to="/"
-                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+                className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
               >
                 Home
               </Link>
               <Link
                 to="/product"
-                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+                className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
               >
                 Product
               </Link>
               <Link
                 to="/gallery"
-                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+                className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
               >
                 Gallery
               </Link>
               <Link
                 to="/about"
-                className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+                className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
               >
                 About
               </Link>
               {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/profile"
-                    className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
-                  >
-                    {user ? `Hi, ${user.username}` : 'Profile'}
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
-                  >
-                    Logout
-                  </button>
-                </>
+                <Link
+                  to="/profile"
+                  className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
+                >
+                  {user ? `Hi, ${user.username}` : 'Profile'}
+                </Link>
               ) : (
                 <Link
                   to="/login"
-                  className="text-secondary hover:text-accent px-3 py-2 rounded-md text-sm font-medium uppercase"
+                  className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
                 >
                   Sign In
                 </Link>

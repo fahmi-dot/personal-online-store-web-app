@@ -25,6 +25,7 @@ export const login = (data) => api.post('/auth/login', data);
 export const getAllProducts = () => api.get('/public/products');
 export const getProductById = (id) => api.get(`/public/products/${id}`);
 export const getAllCategories = () => api.get('/public/categories');
+export const getCategoryById = (id) => api.get(`/public/categories/${id}`);
 
 export const getMyProfile = () => api.get(`/user/profile`);
 export const getMyOrders = () => api.get('/user/orders');

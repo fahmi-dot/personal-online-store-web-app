@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { getMyOrders } from '../services/api';
 import AuthContext from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const [orders, setOrders] = useState([]);
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { user, isAuthenticated, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -25,15 +26,26 @@ const ProfilePage = () => {
     return <Navigate to="/login" />;
   }
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
-          <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="bg-white shadow-md p-6">
             {user ? (
               <div>
                 <p className="text-gray-700"><strong>Name: </strong> {user.username}</p>
                 <p className="text-gray-700"><strong>Email: </strong> {user.email}</p>
+                <button
+                  onClick={handleLogout}
+                  className="bg-accent hover:bg-red-700 mt-5 text-white font-bold uppercase py-2 px-4 focus:outline-none focus:shadow-outline"
+                >
+                  Logout
+                </button>
               </div>
             ) : (
               <p>Loading user data...</p>
@@ -43,7 +55,7 @@ const ProfilePage = () => {
         <div className="md:col-span-2">
           <h1 className="text-3xl font-bold mb-3 text-gray-800 uppercase">My Orders</h1>
           <div className="border-t-2 border-primary mb-5 w-full"></div>
-          <div className="bg-white shadow-md rounded-lg overflow-x-auto">
+          <div className="bg-white shadow-md overflow-x-auto">
             <table className="min-w-full leading-normal">
               <thead>
                 <tr>
@@ -80,7 +92,7 @@ const ProfilePage = () => {
                         <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
                           <span
                             aria-hidden
-                            className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
+                            className="absolute inset-0 bg-green-200 opacity-50"
                           ></span>
                           <span className="relative">{order.status}</span>
                         </span>

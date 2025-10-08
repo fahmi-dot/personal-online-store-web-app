@@ -36,7 +36,7 @@ const RegisterPage = () => {
                 <p className="text-red-700">*</p>
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="username"
                 type="text"
                 value={username}
@@ -50,7 +50,7 @@ const RegisterPage = () => {
                 <p className="text-red-700">*</p>
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 type="email"
                 value={email}
@@ -64,7 +64,7 @@ const RegisterPage = () => {
                 <p className="text-red-700">*</p>
               </label>
               <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow appearance-none border w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 type="password"
                 value={password}
@@ -80,7 +80,7 @@ const RegisterPage = () => {
             </div>
             <div>
               <button
-                className="w-full bg-accent hover:bg-red-700 text-white font-bold py-2 px-4 uppercase rounded focus:outline-none focus:shadow-outline"
+                className="w-full bg-accent hover:bg-red-700 text-white font-bold py-2 px-4 uppercase focus:outline-none focus:shadow-outline"
                 type="submit"
               >
                 Register

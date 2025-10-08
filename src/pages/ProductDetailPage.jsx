@@ -36,7 +36,7 @@ const ProductDetailPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <img
-            className="w-full h-auto object-cover object-center rounded-lg shadow-md"
+            className="w-full h-auto object-cover object-center shadow-md"
             src={'https://res.cloudinary.com/dpqk0grzl/image/upload/v1751614337/default-photo-profile_pqodkq.png' || product.photoUrl}
             alt={product.name}
           />
@@ -55,12 +55,12 @@ const ProductDetailPage = () => {
               min="1"
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value))}
-              className="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow appearance-none border w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <button
             onClick={handleAddToCart}
-            className="bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            className="bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 focus:outline-none focus:shadow-outline w-full"
           >
             Add to Cart
           </button>
