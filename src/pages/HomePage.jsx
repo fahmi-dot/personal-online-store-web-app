@@ -4,19 +4,23 @@ import { getAllProducts } from '../services/api';
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await getAllProducts();
         setProducts(response.data.data);
-        console.log(products);
-      } catch (error) {
-        console.error('Error fetching products:', error);
+      } catch (err) {
+        setError("Error fetching products:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProducts();
   }, []);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,15 +1,10 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
-  const { isAuthenticated, logout, user } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const { user, token } = useSelector((state) => ( state.auth ));
+  const isAuthenticated = !!token;
 
   return (
     <nav className="bg-primary shadow-md">

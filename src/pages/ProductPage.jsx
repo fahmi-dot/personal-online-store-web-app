@@ -6,30 +6,35 @@ import { getCategoryById } from '../services/api';
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const productResponse = await getAllProducts();
-      const fecthedProduct = productResponse.data.data;
-      setProducts(fecthedProduct);
+    const fetchData = async () => {
+      try {
+        const productResponse = await getAllProducts();
+        const fecthedProduct = productResponse.data.data;
+        setProducts(fecthedProduct);
 
-      const categoryIds = [
-        ...new Set(fecthedProduct.map((p) => p.categoryId)),
-      ];
+        const categoryIds = [
+          ...new Set(fecthedProduct.map((p) => p.categoryId)),
+        ];
 
-      const categoryList = {};
-      for (const categoryId of categoryIds) {
-        const categoryResponse = await getCategoryById(categoryId);
-        categoryList[categoryId] = categoryResponse.data.data.name;
+        const categoryList = {};
+        for (const categoryId of categoryIds) {
+          const categoryResponse = await getCategoryById(categoryId);
+          categoryList[categoryId] = categoryResponse.data.data.name;
+        }
+        setCategories(categoryList);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
-      setCategories(categoryList);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  fetchData();
-}, []);
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return <p>Loading...</p>
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">

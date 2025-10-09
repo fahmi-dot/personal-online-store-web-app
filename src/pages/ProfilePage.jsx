@@ -1,34 +1,41 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { getMyOrders } from '../services/api';
-import AuthContext from '../context/AuthContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { logout, fetchProfile } from '../redux/slices/authSlice';
 
 const ProfilePage = () => {
   const [orders, setOrders] = useState([]);
-  const { user, isAuthenticated, logout } = useContext(AuthContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { user, token } = useSelector((state) => state.auth);
+  const isAuthenticated = !!token;
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (isAuthenticated) {
+    if (isAuthenticated) {
+      dispatch(fetchProfile());
+
+      const fetchOrders = async () => {
         try {
           const response = await getMyOrders();
           setOrders(response.data.data);
         } catch (error) {
-          console.error('Error fetching orders:', error);
+          console.error("Error fetching orders:", error);
         }
-      }
-    };
-    fetchOrders();
-  }, [isAuthenticated]);
+      };
+
+      fetchOrders();
+    }
+  }, [isAuthenticated, dispatch]);
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
+    dispatch(logout());
+    navigate("/login");
   };
 
   return (

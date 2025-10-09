@@ -1,22 +1,29 @@
-import React, { useState, useContext } from 'react';
-import { login as apiLogin } from '../services/api';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
+import { login as apiLogin } from '../services/api';
+import { login, fetchProfile } from '../redux/slices/authSlice';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [emailOrUsername, setEmailOrUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
+  const dispatch = useDispatch();
+
+  const [emailOrUsername, setEmailOrUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await apiLogin({ emailOrUsername, password });
-      login(response.data.data.token); 
-      navigate('/profile');
+      const token = response.data.data.token;
+
+      dispatch(login(token));
+
+      await dispatch(fetchProfile());
+
+      navigate("/profile");
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error("Error logging in:", error);
     }
   };
 
