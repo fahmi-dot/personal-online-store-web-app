@@ -14,8 +14,9 @@ export const fetchProfile = createAsyncThunk(
 );
 
 const initialState = {
-  token: localStorage.getItem("token") || null,
   user: null,
+  token: localStorage.getItem("token") || null,
+  refreshToken: localStorage.getItem("refreshToken") || null,
   status: null,
   error: null,
 };
@@ -25,13 +26,25 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
-      state.token = action.payload;
-      localStorage.setItem("token", action.payload);
+      const { accessToken, refreshToken } = action.payload;
+      state.token = accessToken;
+      state.refreshToken = refreshToken;
+
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
     },
     logout: (state) => {
-      state.token = null;
       state.user = null;
+      state.token = null;
+      state.refreshToken = null;
+
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+    },
+    setToken: (state, action) => {
+      state.token = action.payload;
+
+      localStorage.setItem("token", action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -51,5 +64,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setToken } = authSlice.actions;
 export default authSlice.reducer;

@@ -15,11 +15,11 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const response = await apiLogin({ emailOrUsername, password });
-      const token = response.data.data.token;
+      const { accessToken, refreshToken } = response.data.data;
 
-      dispatch(login(token));
+      dispatch(login({ accessToken, refreshToken }));
 
-      await dispatch(fetchProfile());
+      dispatch(fetchProfile());
 
       navigate("/profile");
     } catch (error) {
