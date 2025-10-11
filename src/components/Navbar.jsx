@@ -41,6 +41,12 @@ const Navbar = () => {
               >
                 About
               </Link>
+              <Link
+                to="/cart"
+                className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
+              >
+                Cart
+              </Link>
               {isAuthenticated ? (
                 <Link
                   to="/profile"

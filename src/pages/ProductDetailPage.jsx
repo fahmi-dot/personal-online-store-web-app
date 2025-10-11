@@ -43,8 +43,8 @@ const ProductDetailPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <img
-            className="w-full h-auto object-cover object-center shadow-md"
             src={'https://res.cloudinary.com/dpqk0grzl/image/upload/v1751614337/default-photo-profile_pqodkq.png' || product.photoUrl}
+            className="w-full h-auto object-cover object-center shadow-md"
             alt={product.name}
           />
         </div>
@@ -66,6 +66,26 @@ const ProductDetailPage = () => {
             </div>
             { desc ? ( <p className="text-gray-700">{product.description}</p> ) : ( <></> )}
           </div>
+          <div className="border-t-2 border-primary mb-2 w-full"/>
+          <div>
+            <h3 className="text-xl font-bold mb-2 uppercase">Color</h3>
+            <div className="flex flex-wrap gap-2">
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+              <div className="h-24 w-24 bg-primary"/>
+            </div>
+          </div>
           { category === "Clothing" ? (
             <>
               <div className="border-t-2 border-primary mb-2 w-full"/>
@@ -74,7 +94,7 @@ const ProductDetailPage = () => {
                 <select
                   value={selectedSize}
                   onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full border-2 border-primary py-2 px-3 text-gray-700"
+                  className="w-50 border-2 border-primary py-2 px-3 text-gray-700"
                 >
                   <option value="">Choose an option</option>
                   <option value="S">Small</option>
@@ -105,7 +125,7 @@ const ProductDetailPage = () => {
                 </button>
               </div>
               <div className="flex items-center justify-center h-full w-20 border-2 border-primary">
-                <p className="px-6 text-gray-700">{quantity}</p>
+                <p className="px-5 text-gray-700">{quantity}</p>
               </div>
               <div className="h-full border-2 border-primary">
                 <button
