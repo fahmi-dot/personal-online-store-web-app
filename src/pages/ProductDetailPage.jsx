@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Option from '../components/Option';
 import { getProductById, getCategoryById, addProductToCart } from '../services/api';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState("");
-  const [desc, setDesc] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+  const [showDesc, setShowDesc] = useState(true);
   const { id } = useParams();
+
+  const variants = ["Var 1", "Var 2", "Var 3", "Var 4", "Var 5"];
+  const sizes = ["S", "M", "L", "XL", "XXL", "All Size"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +33,7 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = async () => {
     try {
-      await addProductToCart({ productId: id, quantity });
+      await addProductToCart({ productId: id, variant: selectedVariant, size: selectedSize || null, quantity });
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -50,71 +55,65 @@ const ProductDetailPage = () => {
         </div>
         <div className="flex flex-col space-y-5">
           <div>
-            <h1 className="text-3xl font-bold mb-4 uppercase">{product.name}</h1>
-            <p className="text-gray-800 font-semibold text-2xl">${product.price}</p>
+            <h2 className="text-2xl font-bold mb-4 uppercase">{product.name}</h2>
+            <p className="text-primary font-medium text-xl">${product.price}</p>
           </div>
-          <div className="border-t-2 border-primary mb-2 w-full"/>
+          <div className="border-t-2 border-gray-700 w-full"/>
           <div>
             <div className="flex justify-between">
               <h3 className="text-xl font-bold mb-2 uppercase">Product Description</h3>
               <button
-                  onClick={() => setDesc(!desc)}
-                  className="px-4 py-2 text-xl font-bold hover:bg-gray-100"
-                >
-                  -
-                </button>
+                onClick={() => setShowDesc(!showDesc)}
+                className="h-5 text-xl font-bold"
+              >
+                -
+              </button>
             </div>
-            { desc ? ( <p className="text-gray-700">{product.description}</p> ) : ( <></> )}
+            { showDesc ? ( <p className="text-sm text-gray-700">{product.description}</p> ) : ( <></> )}
           </div>
-          <div className="border-t-2 border-primary mb-2 w-full"/>
+          <div className="border-t-2 border-gray-700 w-full"/>
           <div>
-            <h3 className="text-xl font-bold mb-2 uppercase">Color</h3>
+            <h3 className="text-xl font-bold mb-2 uppercase">Variant</h3>
             <div className="flex flex-wrap gap-2">
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
-              <div className="h-24 w-24 bg-primary"/>
+            {variants.map((v) => (
+              <Option
+                key={v}
+                option={v}
+                selected={selectedVariant === v}
+                onSelect={() => setSelectedVariant(v)}
+              />
+            ))}
             </div>
           </div>
           { category === "Clothing" ? (
             <>
-              <div className="border-t-2 border-primary mb-2 w-full"/>
+              <div className="border-t-2 border-gray-700 w-full"/>
               <div>
                 <h3 className="text-xl font-bold mb-2 uppercase">Size</h3>
-                <select
-                  value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-50 border-2 border-primary py-2 px-3 text-gray-700"
-                >
-                  <option value="">Choose an option</option>
-                  <option value="S">Small</option>
-                  <option value="M">Medium</option>
-                  <option value="L">Large</option>
-                </select>
+                <div className="flex flex-wrap gap-2">
+                {sizes.map((s) => (
+                  <Option
+                    key={s}
+                    option={s}
+                    selected={selectedSize === s}
+                    onSelect={() => setSelectedSize(s)}
+                  />
+                ))}
+                </div>
               </div>
             </>
             ) : category === "Books" ? (
               <></>
             ) : ( <></> )
           }
-          <div className="border-t-2 border-primary mb-2 w-full"/>
+          <div className="border-t-2 border-gray-700 w-full"/>
           <div>
             <h3 className="text-xl font-bold mb-2 uppercase">Quantity</h3>
-            <div className="flex items-center w-fit h-12 space-x-1">
-              <div className="h-full border-2 border-primary">
+            <div className="flex items-center w-fit space-x-1">
+              <div className="border border-primary">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className={`w-12 px-4 py-2 text-xl font-bold transition 
+                  className={`px-4 py-2 font-bold text-sm transition 
                   ${
                     quantity === 1
                       ? "text-gray-300 cursor-not-allowed"
@@ -124,13 +123,13 @@ const ProductDetailPage = () => {
                   -
                 </button>
               </div>
-              <div className="flex items-center justify-center h-full w-20 border-2 border-primary">
-                <p className="px-5 text-gray-700">{quantity}</p>
+              <div className="flex items-center justify-center w-20 border border-primary">
+                <p className="px-4 py-2 font-bold text-sm text-gray-700">{quantity}</p>
               </div>
-              <div className="h-full border-2 border-primary">
+              <div className="border border-primary">
                 <button
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="w-12 px-4 py-2 text-xl font-bold text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100"
                 >
                   +
                 </button>
@@ -140,12 +139,12 @@ const ProductDetailPage = () => {
           <div>
             <button
               onClick={handleAddToCart}
-              className="w-full py-2 px-4 font-bold uppercase bg-accent hover:bg-red-700 text-secondary focus:outline-none focus:shadow-outline"
+              className="w-full py-2 px-4 text-lg font-bold uppercase bg-accent hover:bg-red-700 text-secondary focus:outline-none focus:shadow-outline"
             >
               Add to Cart
             </button>
           </div>
-          <div className="flex justify-between text-gray-700">
+          <div className="flex justify-between text-sm text-gray-700">
             <button className="hover:underline">Add to Wishlist</button>
             <button className="hover:underline">Share</button>
           </div>
