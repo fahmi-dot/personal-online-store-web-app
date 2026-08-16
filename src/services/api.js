@@ -66,3 +66,21 @@ export const updateCartItem = (detailId, quantity) => api.put(`/user/cart/${deta
 export const deleteCartItem = (detailId) => api.delete(`/user/cart/${detailId}`);
 export const clearCart = () => api.delete('/user/cart');
 
+// Admin APIs
+export const adminGetAllUsers = (params = {}) => api.get('/admin/users', { params });
+export const adminDeleteUser = (id) => api.delete(`/admin/users/${id}`);
+
+export const adminGetAllCategories = () => api.get('/public/categories');
+export const adminCreateCategory = (data) => api.post('/admin/categories', data);
+export const adminUpdateCategory = (id, data) => api.put(`/admin/categories/${id}`, data);
+export const adminDeleteCategory = (id) => api.delete(`/admin/categories/${id}`);
+
+export const adminGetAllProducts = (params = {}) => api.get('/public/products', { params });
+export const adminCreateProduct = (formData) => api.post('/admin/products', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' },
+});
+export const adminUpdateProduct = (id, data) => api.put(`/admin/products/${id}`, data);
+export const adminDeleteProduct = (id) => api.delete(`/admin/products/${id}`);
+
+export const adminGetAllOrders = (params = {}) => api.get('/admin/orders', { params });
+export const adminUpdateOrderStatus = (id, status) => api.put(`/admin/orders/${id}/status`, null, { params: { status } });

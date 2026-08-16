@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 const Navbar = () => {
   const { user, token } = useSelector((state) => ( state.auth ));
   const isAuthenticated = !!token;
+  const role = user?.role || (Array.isArray(user?.roles) ? user?.roles[0] : null);
+  const isAdmin = role === 'ROLE_ADMIN' || role === 'ADMIN';
 
   return (
     <nav className="bg-primary shadow-md">
@@ -48,12 +50,23 @@ const Navbar = () => {
                 Cart
               </Link>
               {isAuthenticated ? (
-                <Link
-                  to="/profile"
-                  className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
-                >
-                  {user ? `Hi, ${user.username}` : 'Profile'}
-                </Link>
+                <>
+                  <Link
+                    to="/profile"
+                    className="text-secondary hover:text-accent px-3 py-2 text-sm font-medium uppercase"
+                  >
+                    {user ? `Hi, ${user.username}` : 'Profile'}
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="px-3 py-2 text-sm font-medium uppercase rounded-md"
+                      style={{ background: '#6366f1', color: '#fff' }}
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
+                </>
               ) : (
                 <Link
                   to="/login"
