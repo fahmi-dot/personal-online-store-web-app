@@ -50,13 +50,19 @@ api.interceptors.response.use(
 export const register = (data) => api.post('/auth/register', data);
 export const login = (data) => api.post('/auth/login', data);
 
-export const getAllProducts = () => api.get('/public/products');
+export const getAllProducts = (params = {}) => api.get('/public/products', { params });
 export const getProductById = (id) => api.get(`/public/products/${id}`);
 export const getAllCategories = () => api.get('/public/categories');
 export const getCategoryById = (id) => api.get(`/public/categories/${id}`);
 
 export const getMyProfile = () => api.get(`/user/profile`);
-export const getMyOrders = () => api.get('/user/orders');
+export const getMyOrders = (params = {}) => api.get('/user/orders', { params });
 export const createOrder = (data) => api.post('/user/orders', data);
-export const getMyCart = () => api.get('/user/cart')
+export const cancelOrder = (id) => api.put(`/user/orders/${id}/cancel`);
+
+export const getMyCart = () => api.get('/user/cart');
 export const addProductToCart = (data) => api.post('/user/cart', data);
+export const updateCartItem = (detailId, quantity) => api.put(`/user/cart/${detailId}`, null, { params: { quantity } });
+export const deleteCartItem = (detailId) => api.delete(`/user/cart/${detailId}`);
+export const clearCart = () => api.delete('/user/cart');
+
