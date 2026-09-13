@@ -60,8 +60,8 @@ const Navbar = () => {
                   {isAdmin && (
                     <Link
                       to="/admin"
-                      className="px-3 py-2 text-sm font-medium uppercase rounded-md"
-                      style={{ background: '#6366f1', color: '#fff' }}
+                      className="px-3 py-2 text-sm font-medium uppercase transition-colors"
+                      style={{ background: '#2563eb', color: '#fff' }}
                     >
                       Admin Panel
                     </Link>

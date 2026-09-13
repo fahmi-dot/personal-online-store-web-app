@@ -1,20 +1,35 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { register } from '../services/api';
 import { Link, useNavigate } from 'react-router-dom';
+import { showSuccessToast, showErrorToast } from '../redux/slices/toastSlice';
 
 const RegisterPage = () => {
-  const [username, setUserame] = useState('');
+  const dispatch = useDispatch();
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!username || !email || !password) {
+      dispatch(showErrorToast("Please fill in all required fields."));
+      return;
+    }
+
     try {
-      await register({ username, email, password});
+      setSubmitting(true);
+      await register({ username, email, password });
+      dispatch(showSuccessToast("Account created successfully! Please sign in."));
       navigate('/login');
     } catch (error) {
       console.error('Error registering:', error);
+      const msg = error.response?.data?.message || "Registration failed. Username or email may already be taken.";
+      dispatch(showErrorToast(msg));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -74,13 +89,13 @@ const RegisterPage = () => {
             </div>
             <div className="text-gray-700 text-center mb-5">
               Have an account?
-              <Link to="/login" className="text-accent font-semibold hover:text-red-700 px-2">
+              <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-800 px-2">
                 Log in
               </Link>
             </div>
             <div>
               <button
-                className="w-full bg-accent hover:bg-red-700 text-white font-bold py-2 px-4 uppercase focus:outline-none focus:shadow-outline"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 uppercase focus:outline-none transition-colors"
                 type="submit"
               >
                 Register

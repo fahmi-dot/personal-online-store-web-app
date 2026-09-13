@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { login as apiLogin } from '../services/api';
 import { login, fetchProfile } from '../redux/slices/authSlice';
+import { showSuccessToast, showErrorToast } from '../redux/slices/toastSlice';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -10,20 +11,31 @@ const LoginPage = () => {
 
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!emailOrUsername || !password) {
+      dispatch(showErrorToast("Please enter both email/username and password."));
+      return;
+    }
+
     try {
+      setSubmitting(true);
       const response = await apiLogin({ emailOrUsername, password });
       const { accessToken, refreshToken } = response.data.data;
 
       dispatch(login({ accessToken, refreshToken }));
-
       dispatch(fetchProfile());
+      dispatch(showSuccessToast("Login successful! Welcome back."));
 
       navigate("/profile");
     } catch (error) {
       console.error("Error logging in:", error);
+      const msg = error.response?.data?.message || "Invalid email/username or password.";
+      dispatch(showErrorToast(msg));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -63,13 +75,13 @@ const LoginPage = () => {
               />
             </div>
             <div className="text-gray-700 text-end mb-5">
-              <Link to="/forgot-password"  className="text-accent font-semibold hover:text-red-700">
+              <Link to="/forgot-password"  className="text-blue-600 font-semibold hover:text-blue-800">
                 Forgot password?
               </Link>
             </div>
             <div>
               <button
-                className="w-full bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 focus:outline-none focus:shadow-outline"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase py-2.5 px-4 focus:outline-none transition-colors"
                 type="submit"
               >
                 Log in
@@ -83,7 +95,7 @@ const LoginPage = () => {
           <p className="text-gray-700 text-lg mb-5">
             Registering for this site allows you to access your order status and history.
           </p>
-          <Link to="/register" className="bg-accent hover:bg-red-700 text-white font-bold uppercase py-2 px-4 focus:outline-none focus:shadow-outline">
+          <Link to="/register" className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold uppercase py-2.5 px-6 focus:outline-none transition-colors">
             Register
           </Link>
         </div>

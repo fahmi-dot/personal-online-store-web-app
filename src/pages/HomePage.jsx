@@ -39,7 +39,7 @@ const HomePage = () => {
           <div className="flex justify-center gap-4">
             <Link
               to="/product"
-              className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-6 py-3 rounded-lg text-xs uppercase tracking-wider transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 text-xs uppercase tracking-wider transition-colors"
             >
               Shop All Products
             </Link>

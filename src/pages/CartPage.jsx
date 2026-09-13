@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import ProductCartCard from '../components/ProductCartCard';
+import ConfirmModal from '../components/ConfirmModal';
+import { showSuccessToast, showErrorToast } from '../redux/slices/toastSlice';
 import { getMyCart, updateCartItem, deleteCartItem, clearCart, createOrder } from '../services/api';
 
 const CartPage = () => {
+  const dispatch = useDispatch();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    isDanger: false,
+  });
   const navigate = useNavigate();
 
   const fetchCart = async () => {
@@ -20,7 +31,9 @@ const CartPage = () => {
       setCart(response.data.data);
     } catch (error) {
       console.error("Error fetching cart:", error);
-      setErrorMessage(error.response?.data?.message || "Failed to load your cart. Please ensure you are logged in.");
+      const msg = error.response?.data?.message || "Failed to load your cart. Please ensure you are logged in.";
+      setErrorMessage(msg);
+      dispatch(showErrorToast(msg));
     } finally {
       setLoading(false);
     }
@@ -35,39 +48,58 @@ const CartPage = () => {
       setUpdatingId(detailId);
       await updateCartItem(detailId, newQuantity);
       await fetchCart();
+      dispatch(showSuccessToast("Item quantity updated."));
     } catch (error) {
       console.error("Error updating quantity:", error);
-      alert(error.response?.data?.message || "Failed to update item quantity.");
+      dispatch(showErrorToast(error.response?.data?.message || "Failed to update item quantity."));
     } finally {
       setUpdatingId(null);
     }
   };
 
-  const handleDeleteItem = async (detailId) => {
-    if (!window.confirm("Are you sure you want to remove this item from your cart?")) return;
-    try {
-      setUpdatingId(detailId);
-      await deleteCartItem(detailId);
-      await fetchCart();
-    } catch (error) {
-      console.error("Error deleting item:", error);
-      alert(error.response?.data?.message || "Failed to remove item.");
-    } finally {
-      setUpdatingId(null);
-    }
+  const handleDeleteItem = (detailId) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Item',
+      message: 'Are you sure you want to remove this item from your shopping cart?',
+      isDanger: true,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          setUpdatingId(detailId);
+          await deleteCartItem(detailId);
+          await fetchCart();
+          dispatch(showSuccessToast("Item removed from cart."));
+        } catch (error) {
+          console.error("Error deleting item:", error);
+          dispatch(showErrorToast(error.response?.data?.message || "Failed to remove item."));
+        } finally {
+          setUpdatingId(null);
+        }
+      },
+    });
   };
 
-  const handleClearCart = async () => {
-    if (!window.confirm("Are you sure you want to clear your entire cart?")) return;
-    try {
-      setLoading(true);
-      await clearCart();
-      await fetchCart();
-    } catch (error) {
-      console.error("Error clearing cart:", error);
-      alert(error.response?.data?.message || "Failed to clear cart.");
-      setLoading(false);
-    }
+  const handleClearCart = () => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Clear Shopping Cart',
+      message: 'Are you sure you want to empty your entire shopping cart? This cannot be undone.',
+      isDanger: true,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        try {
+          setLoading(true);
+          await clearCart();
+          await fetchCart();
+          dispatch(showSuccessToast("Shopping cart cleared."));
+        } catch (error) {
+          console.error("Error clearing cart:", error);
+          dispatch(showErrorToast(error.response?.data?.message || "Failed to clear cart."));
+          setLoading(false);
+        }
+      },
+    });
   };
 
   const handleCheckout = async () => {
@@ -85,21 +117,31 @@ const CartPage = () => {
 
       await createOrder(orderPayload);
       setCheckoutSuccess(true);
+      dispatch(showSuccessToast("Order placed successfully! Redirecting to orders..."));
       setTimeout(() => {
         navigate('/profile');
       }, 2000);
     } catch (error) {
       console.error("Error during checkout:", error);
-      setErrorMessage(error.response?.data?.message || "Checkout failed. Please try again.");
+      const msg = error.response?.data?.message || "Checkout failed. Please try again.";
+      setErrorMessage(msg);
+      dispatch(showErrorToast(msg));
       setIsCheckingOut(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mb-4"></div>
-        <p className="text-gray-600 font-medium">Loading your shopping cart...</p>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse">
+        <div className="h-8 w-48 bg-gray-200 rounded mb-8"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-28 bg-gray-100 rounded-xl"></div>
+            ))}
+          </div>
+          <div className="h-64 bg-gray-100 rounded-xl"></div>
+        </div>
       </div>
     );
   }
@@ -215,7 +257,7 @@ const CartPage = () => {
               type="button"
               disabled={isCheckingOut || checkoutSuccess}
               onClick={handleCheckout}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-lg uppercase tracking-wider text-sm transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 uppercase tracking-wider text-sm transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isCheckingOut ? (
                 <>
@@ -235,8 +277,21 @@ const CartPage = () => {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        isDanger={confirmModal.isDanger}
+        confirmText="Yes, Proceed"
+        cancelText="Cancel"
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };
 
-export default CartPage;
+export default CartPage;
+

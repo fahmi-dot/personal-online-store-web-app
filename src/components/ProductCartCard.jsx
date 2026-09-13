@@ -62,7 +62,7 @@ const ProductCartCard = ({ item, onUpdateQuantity, onDeleteItem, updatingId }) =
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
           <div className="flex items-center space-x-2">
             <span className="text-xs text-gray-500 font-medium mr-1">Qty:</span>
-            <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+            <div className="flex items-center border border-gray-300 overflow-hidden">
               <button
                 type="button"
                 disabled={item.quantity <= 1 || isUpdating}

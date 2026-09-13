@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import ProductCard from '../components/ProductCard';
+import { ProductCardSkeleton } from '../components/Skeletons';
+import { showErrorToast } from '../redux/slices/toastSlice';
 import { getAllProducts, getAllCategories } from '../services/api';
 
 const ProductPage = () => {
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -44,10 +48,11 @@ const ProductPage = () => {
       setPagination(response.data.pagination);
     } catch (error) {
       console.error("Error fetching products:", error);
+      dispatch(showErrorToast(error.response?.data?.message || "Failed to load products. Please try again."));
     } finally {
       setLoading(false);
     }
-  }, [page, sortBy, sortDirection, selectedCategory, searchQuery]);
+  }, [page, sortBy, sortDirection, selectedCategory, searchQuery, dispatch]);
 
   useEffect(() => {
     fetchProducts();
@@ -98,51 +103,36 @@ const ProductPage = () => {
 
       {/* Filter & Search Bar */}
       <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-8 space-y-4">
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-          {/* Search Form */}
-          <form onSubmit={handleSearchSubmit} className="relative w-full md:w-96 flex">
-            <input
-              type="text"
-              placeholder="Search products by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
-            />
-            <svg
-              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <button
-              type="submit"
-              className="ml-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors"
-            >
-              Search
-            </button>
-          </form>
+        <form onSubmit={handleSearchSubmit} className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+          />
+          <button
+            type="submit"
+            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors uppercase tracking-wider"
+          >
+            Search
+          </button>
+        </form>
 
-          {/* Sort Dropdown */}
-          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-            <label htmlFor="sort" className="text-xs font-semibold text-gray-600 uppercase">
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-gray-100">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase text-gray-500 tracking-wider">
               Sort By:
-            </label>
+            </span>
             <select
-              id="sort"
+              value={sortBy === 'price' ? `price_${sortDirection}` : sortBy === 'name' && sortDirection === 'desc' ? 'name_desc' : 'name_asc'}
               onChange={handleSortChange}
-              className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-gray-800"
+              className="text-xs font-semibold border border-gray-300 px-2 py-1.5 bg-white text-gray-700 focus:outline-none"
             >
-              <option value="name_asc">Name: A to Z</option>
-              <option value="name_desc">Name: Z to A</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
+              <option value="name_asc">Name (A-Z)</option>
+              <option value="name_desc">Name (Z-A)</option>
+              <option value="price_asc">Price (Low to High)</option>
+              <option value="price_desc">Price (High to Low)</option>
             </select>
           </div>
         </div>
@@ -151,9 +141,9 @@ const ProductPage = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 scrollbar-none">
           <button
             onClick={() => handleCategorySelect('')}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+            className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
               selectedCategory === ''
-                ? 'bg-gray-900 text-white'
+                ? 'bg-blue-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -163,9 +153,9 @@ const ProductPage = () => {
             <button
               key={cat.id}
               onClick={() => handleCategorySelect(cat.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+              className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
                 selectedCategory === cat.id
-                  ? 'bg-gray-900 text-white'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -177,12 +167,13 @@ const ProductPage = () => {
 
       {/* Products Grid */}
       {loading ? (
-        <div className="py-20 text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mb-4"></div>
-          <p className="text-gray-500 font-medium">Loading products...</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <ProductCardSkeleton key={idx} />
+          ))}
         </div>
       ) : products.length === 0 ? (
-        <div className="bg-white border border-gray-100 rounded-xl p-12 text-center max-w-md mx-auto shadow-sm my-8">
+        <div className="bg-white border border-gray-100 p-12 text-center max-w-md mx-auto shadow-sm my-8">
           <p className="text-lg font-bold text-gray-800 mb-2">No Products Found</p>
           <p className="text-gray-500 text-sm mb-4">
             Try adjusting your search query or selecting a different category.
@@ -212,7 +203,7 @@ const ProductPage = () => {
               <button
                 disabled={!pagination.hasPrev}
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
-                className="px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-xs font-semibold uppercase tracking-wider border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 &larr; Previous
               </button>
@@ -222,7 +213,7 @@ const ProductPage = () => {
               <button
                 disabled={!pagination.hasNext}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-xs font-semibold uppercase tracking-wider border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next &rarr;
               </button>

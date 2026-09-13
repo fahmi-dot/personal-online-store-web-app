@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Option from '../components/Option';
+import { ProductDetailSkeleton } from '../components/Skeletons';
+import ConfirmModal from '../components/ConfirmModal';
+import { showSuccessToast, showErrorToast } from '../redux/slices/toastSlice';
 import { getProductById, addProductToCart } from '../services/api';
 
 const DEFAULT_IMAGE = 'https://res.cloudinary.com/dpqk0grzl/image/upload/v1751614337/default-photo-profile_pqodkq.png';
 
 const ProductDetailPage = () => {
+  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [showDesc, setShowDesc] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [addSuccess, setAddSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -33,25 +37,23 @@ const ProductDetailPage = () => {
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
+        dispatch(showErrorToast("Could not load product details."));
       } finally {
         setLoading(false);
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, dispatch]);
 
   const handleAddToCart = async () => {
     if (!token) {
-      if (window.confirm("You need to login first to add items to your cart. Go to login page?")) {
-        navigate("/login");
-      }
+      setLoginModalOpen(true);
       return;
     }
 
     try {
       setIsAdding(true);
       setErrorMessage("");
-      setAddSuccess(false);
 
       await addProductToCart({
         productId: id,
@@ -60,23 +62,19 @@ const ProductDetailPage = () => {
         quantity,
       });
 
-      setAddSuccess(true);
-      setTimeout(() => setAddSuccess(false), 4000);
+      dispatch(showSuccessToast(`Added ${quantity} item(s) to your cart!`));
     } catch (error) {
       console.error('Error adding to cart:', error);
-      setErrorMessage(error.response?.data?.message || "Failed to add product to cart.");
+      const errMsg = error.response?.data?.message || "Failed to add product to cart.";
+      setErrorMessage(errMsg);
+      dispatch(showErrorToast(errMsg));
     } finally {
       setIsAdding(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mb-4"></div>
-        <p className="text-gray-500 font-medium">Loading product details...</p>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (!product) {
@@ -261,7 +259,7 @@ const ProductDetailPage = () => {
               type="button"
               disabled={isOutOfStock || isAdding}
               onClick={handleAddToCart}
-              className="w-full py-3.5 px-6 text-sm font-bold uppercase tracking-wider bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-6 text-sm font-bold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isAdding ? (
                 <>
@@ -277,6 +275,20 @@ const ProductDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Login Required Modal */}
+      <ConfirmModal
+        isOpen={loginModalOpen}
+        title="Login Required"
+        message="You need to sign in to your account first before adding items to your cart."
+        confirmText="Go to Login"
+        cancelText="Cancel"
+        onConfirm={() => {
+          setLoginModalOpen(false);
+          navigate("/login");
+        }}
+        onCancel={() => setLoginModalOpen(false)}
+      />
     </div>
   );
 };

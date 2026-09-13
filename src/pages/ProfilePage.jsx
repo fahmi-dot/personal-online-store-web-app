@@ -100,7 +100,7 @@ const ProfilePage = () => {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white font-bold uppercase text-xs py-2.5 px-4 rounded-lg tracking-wider transition-colors"
+                  className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white font-bold uppercase text-xs py-2.5 px-4 tracking-wider transition-colors"
                 >
                   Logout
                 </button>

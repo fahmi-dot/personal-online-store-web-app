@@ -1,79 +1,115 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import AdminLayout from '../../components/AdminLayout';
+import ConfirmModal from '../../components/ConfirmModal';
+import { TableRowSkeleton } from '../../components/Skeletons';
+import { showSuccessToast, showErrorToast } from '../../redux/slices/toastSlice';
 import { adminGetAllUsers, adminDeleteUser } from '../../services/api';
 
-const btn = (color) => ({ padding: '7px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: 13, background: color, color: '#fff' });
+const btn = (color, textColor = '#fff') => ({
+  padding: '7px 14px', border: 'none', cursor: 'pointer',
+  fontWeight: 600, fontSize: 13, background: color, color: textColor,
+});
 
 export default function AdminUsersPage() {
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [toast, setToast] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
-  const load = (p = 0) =>
-    adminGetAllUsers({ page: p, size: 15 }).then((r) => {
+  const load = async (p = 0) => {
+    try {
+      setLoading(true);
+      const r = await adminGetAllUsers({ page: p, size: 15 });
       setUsers(r.data?.data || []);
       setTotalPages(r.data?.pagination?.totalPages || 1);
-    });
+    } catch {
+      dispatch(showErrorToast('Failed to load users.'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => { load(page); }, [page]);
 
-  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
-
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this user? This action cannot be undone.')) return;
-    try { await adminDeleteUser(id); showToast('User deleted.'); load(page); }
-    catch { showToast('Failed to delete user.'); }
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    try {
+      await adminDeleteUser(deleteTargetId);
+      dispatch(showSuccessToast('User deleted successfully!'));
+      setDeleteTargetId(null);
+      load(page);
+    } catch (err) {
+      dispatch(showErrorToast(err.response?.data?.message || 'Failed to delete user.'));
+    }
   };
 
   const fmtDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
   return (
     <AdminLayout>
-      {toast && <div style={{ position: 'fixed', top: 20, right: 20, background: '#1e293b', color: '#fff', padding: '12px 20px', borderRadius: 10, zIndex: 200, fontSize: 14 }}>{toast}</div>}
-      <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1e293b', marginBottom: 24 }}>Users</h2>
-      <div style={{ background: '#fff', borderRadius: 12, boxShadow: '0 1px 4px rgba(0,0,0,0.07)', overflow: 'hidden' }}>
+      <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 24 }}>Registered Users</h2>
+      <div style={{ background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              {['Username', 'Email', 'Role', 'Joined', 'Actions'].map((h) => (
-                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: '#475569' }}>{h}</th>
+              {['Username', 'Email', 'Role', 'Joined Date', 'Actions'].map((h) => (
+                <th key={h} style={{ padding: '14px 20px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
-              <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 600, color: '#1e293b' }}>{u.username}</td>
-                <td style={{ padding: '12px 16px', fontSize: 13, color: '#64748b' }}>{u.email || '—'}</td>
-                <td style={{ padding: '12px 16px' }}>
-                  <span style={{
-                    background: u.role === 'ROLE_ADMIN' ? '#6366f120' : '#10b98120',
-                    color: u.role === 'ROLE_ADMIN' ? '#6366f1' : '#10b981',
-                    borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 700,
-                  }}>{u.role || 'USER'}</span>
-                </td>
-                <td style={{ padding: '12px 16px', fontSize: 13, color: '#64748b' }}>{fmtDate(u.createdAt)}</td>
-                <td style={{ padding: '12px 16px' }}>
-                  {u.role !== 'ROLE_ADMIN' && (
-                    <button onClick={() => handleDelete(u.id)} style={{ ...btn('#ef4444') }}>Delete</button>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {users.length === 0 && (
-              <tr><td colSpan={5} style={{ padding: 32, textAlign: 'center', color: '#94a3b8' }}>No users found.</td></tr>
+            {loading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <TableRowSkeleton key={idx} cols={5} />
+              ))
+            ) : users.length === 0 ? (
+              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No users found.</td></tr>
+            ) : (
+              users.map((u) => (
+                <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{u.username}</td>
+                  <td style={{ padding: '14px 20px', fontSize: 13, color: '#64748b' }}>{u.email || '—'}</td>
+                  <td style={{ padding: '14px 20px' }}>
+                    <span style={{
+                      background: u.role === 'ROLE_ADMIN' ? '#2563eb18' : '#05966918',
+                      color: u.role === 'ROLE_ADMIN' ? '#2563eb' : '#059669',
+                      padding: '4px 10px', fontSize: 11, fontWeight: 700,
+                    }}>{u.role || 'USER'}</span>
+                  </td>
+                  <td style={{ padding: '14px 20px', fontSize: 13, color: '#64748b' }}>{fmtDate(u.createdAt)}</td>
+                  <td style={{ padding: '14px 20px' }}>
+                    {u.role !== 'ROLE_ADMIN' && (
+                      <button onClick={() => setDeleteTargetId(u.id)} style={btn('#dc2626')}>Delete</button>
+                    )}
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
+
       {totalPages > 1 && (
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 20 }}>
-          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ ...btn('#e2e8f0'), color: '#475569' }}>Prev</button>
-          <span style={{ lineHeight: '32px', fontSize: 14 }}>Page {page + 1} / {totalPages}</span>
-          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1} style={{ ...btn('#e2e8f0'), color: '#475569' }}>Next</button>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', marginTop: 24 }}>
+          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ padding: '8px 16px', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 600, fontSize: 12, background: '#fff', color: '#475569' }}>&larr; Prev</button>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>Page {page + 1} of {totalPages}</span>
+          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1} style={{ padding: '8px 16px', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 600, fontSize: 12, background: '#fff', color: '#475569' }}>Next &rarr;</button>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={Boolean(deleteTargetId)}
+        title="Delete User"
+        message="Are you sure you want to delete this user? This account will permanently lose access."
+        isDanger={true}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </AdminLayout>
   );
 }
