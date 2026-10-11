@@ -1,13 +1,12 @@
-﻿import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const navLinks = [
-  { to: '/admin', label: 'Dashboard', icon: '📊' },
-  { to: '/admin/products', label: 'Products', icon: '📦' },
-  { to: '/admin/categories', label: 'Categories', icon: '🏷️' },
-  { to: '/admin/orders', label: 'Orders', icon: '🛒' },
-  { to: '/admin/users', label: 'Users', icon: '👥' },
+  { to: '/admin', label: 'DASHBOARD', icon: '📊' },
+  { to: '/admin/products', label: 'PRODUCTS', icon: '📦' },
+  { to: '/admin/categories', label: 'CATEGORIES', icon: '🏷️' },
+  { to: '/admin/orders', label: 'ORDERS', icon: '🛒' },
+  { to: '/admin/users', label: 'USERS', icon: '👥' },
 ];
 
 export default function AdminLayout({ children }) {
@@ -15,55 +14,50 @@ export default function AdminLayout({ children }) {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="flex min-h-screen bg-retro-cream text-black font-sans">
       {/* Sidebar */}
-      <aside style={{
-        width: 250, background: '#0f172a', color: '#e2e8f0',
-        display: 'flex', flexDirection: 'column', padding: '24px 0', flexShrink: 0,
-        position: 'sticky', top: 0, height: '100vh', borderRight: '1px solid #1e293b',
-        boxSizing: 'border-box',
-      }}>
-        {/* Logo / Brand Header */}
-        <div style={{ padding: '0 24px 20px', borderBottom: '1px solid #1e293b' }}>
-          <Link to="/" style={{
-            color: '#94a3b8', textDecoration: 'none', fontSize: 12, fontWeight: 600,
-            display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 12,
-            transition: 'color 0.15s',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-          onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
-            <span>&larr;</span> Back to Store
+      <aside className="w-64 bg-white border-r-2 border-black flex flex-col shrink-0 sticky top-0 h-screen z-20">
+        {/* Brand Header */}
+        <div className="p-6 border-b-2 border-black bg-retro-amber">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest text-black hover:underline mb-4"
+          >
+            <span>&larr;</span> STOREFRONT
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{
-              width: 34, height: 34, borderRadius: 8, background: '#4f46e5',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 16,
-            }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center font-extrabold text-xl shadow-[2px_2px_0px_#000]">
               P
             </div>
             <div>
-              <h1 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#f8fafc', lineHeight: 1.2 }}>Pahmi.co</h1>
-              <span style={{ fontSize: 11, color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Admin Console</span>
+              <h1 className="font-extrabold text-lg uppercase tracking-tight leading-none text-black">
+                PAHMI.CO
+              </h1>
+              <span className="inline-block mt-1 bg-black text-white font-mono text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-widest">
+                ADMIN CONSOLE
+              </span>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav style={{ flex: 1, padding: '20px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <nav className="flex-1 p-4 flex flex-col gap-2 overflow-y-auto">
+          <div className="font-mono text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2 mb-1">
+            // MAIN MENU
+          </div>
           {navLinks.map((link) => {
             const active = location.pathname === link.to;
             return (
-              <Link key={link.to} to={link.to} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 14px', textDecoration: 'none',
-                color: active ? '#fff' : '#94a3b8',
-                background: active ? '#1e293b' : 'transparent',
-                fontWeight: active ? 600 : 500,
-                fontSize: 13, borderRadius: 8,
-                borderLeft: active ? '3px solid #6366f1' : '3px solid transparent',
-                transition: 'all 0.15s ease',
-              }}>
-                <span style={{ fontSize: 16 }}>{link.icon}</span>
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`flex items-center gap-3 px-3 py-2.5 font-mono text-xs font-bold uppercase tracking-wider border-2 transition-all ${
+                  active
+                    ? 'bg-black text-white border-black shadow-[3px_3px_0px_#ffde59]'
+                    : 'bg-white text-black border-transparent hover:border-black hover:bg-gray-50'
+                }`}
+              >
+                <span className="text-base">{link.icon}</span>
                 <span>{link.label}</span>
               </Link>
             );
@@ -71,26 +65,25 @@ export default function AdminLayout({ children }) {
         </nav>
 
         {/* Footer / User Badge */}
-        <div style={{ padding: '16px 20px', borderTop: '1px solid #1e293b', background: '#0b1120' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%', background: '#334155',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#e2e8f0',
-            }}>
+        <div className="p-4 border-t-2 border-black bg-retro-cream">
+          <div className="flex items-center gap-3 border-2 border-black bg-white p-2.5 shadow-[2px_2px_0px_#000]">
+            <div className="w-8 h-8 border-2 border-black bg-retro-amber flex items-center justify-center font-mono font-bold text-sm text-black">
               {user?.username ? user.username.charAt(0).toUpperCase() : 'A'}
             </div>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {user?.username || 'Admin'}
+            <div className="overflow-hidden">
+              <div className="font-mono text-xs font-bold text-black truncate uppercase">
+                {user?.username || 'ADMIN'}
               </div>
-              <div style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>Administrator</div>
+              <div className="font-mono text-[9px] font-bold text-retro-coral uppercase tracking-widest">
+                ROOT_ADMIN
+              </div>
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: '36px 40px', overflowY: 'auto', maxWidth: 1400 }}>
+      <main className="flex-1 p-8 md:p-10 overflow-y-auto max-w-7xl">
         {children}
       </main>
     </div>

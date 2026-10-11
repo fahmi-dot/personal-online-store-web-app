@@ -1,15 +1,10 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import AdminLayout from '../../components/AdminLayout';
 import ConfirmModal from '../../components/ConfirmModal';
 import { TableRowSkeleton } from '../../components/Skeletons';
 import { showSuccessToast, showErrorToast } from '../../redux/slices/toastSlice';
 import { adminGetAllUsers, adminDeleteUser } from '../../services/api';
-
-const btn = (color, textColor = '#fff') => ({
-  padding: '7px 14px', border: 'none', cursor: 'pointer',
-  fontWeight: 600, fontSize: 13, background: color, color: textColor,
-});
 
 export default function AdminUsersPage() {
   const dispatch = useDispatch();
@@ -38,7 +33,7 @@ export default function AdminUsersPage() {
     if (!deleteTargetId) return;
     try {
       await adminDeleteUser(deleteTargetId);
-      dispatch(showSuccessToast('User deleted successfully!'));
+      dispatch(showSuccessToast('User account purged successfully!'));
       setDeleteTargetId(null);
       load(page);
     } catch (err) {
@@ -50,63 +45,102 @@ export default function AdminUsersPage() {
 
   return (
     <AdminLayout>
-      <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 24 }}>Registered Users</h2>
-      <div style={{ background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              {['Username', 'Email', 'Role', 'Joined Date', 'Actions'].map((h) => (
-                <th key={h} style={{ padding: '14px 20px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, idx) => (
-                <TableRowSkeleton key={idx} cols={5} />
-              ))
-            ) : users.length === 0 ? (
-              <tr><td colSpan={5} style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No users found.</td></tr>
-            ) : (
-              users.map((u) => (
-                <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{u.username}</td>
-                  <td style={{ padding: '14px 20px', fontSize: 13, color: '#64748b' }}>{u.email || '—'}</td>
-                  <td style={{ padding: '14px 20px' }}>
-                    <span style={{
-                      background: u.role === 'ROLE_ADMIN' ? '#2563eb18' : '#05966918',
-                      color: u.role === 'ROLE_ADMIN' ? '#2563eb' : '#059669',
-                      padding: '4px 10px', fontSize: 11, fontWeight: 700,
-                    }}>{u.role || 'USER'}</span>
-                  </td>
-                  <td style={{ padding: '14px 20px', fontSize: 13, color: '#64748b' }}>{fmtDate(u.createdAt)}</td>
-                  <td style={{ padding: '14px 20px' }}>
-                    {u.role !== 'ROLE_ADMIN' && (
-                      <button onClick={() => setDeleteTargetId(u.id)} style={btn('#dc2626')}>Delete</button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {/* Header */}
+      <div className="border-2 border-black bg-white p-6 retro-shadow mb-8">
+        <div className="inline-block bg-black text-retro-amber font-mono text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest mb-2">
+          ACCOUNTS // IDENTITY_REGISTRY
+        </div>
+        <h2 className="font-extrabold text-3xl uppercase tracking-tight text-black m-0">
+          REGISTERED USERS
+        </h2>
+        <p className="font-mono text-xs text-gray-600 uppercase tracking-wide mt-1">
+          Directory of registered customer and administrative credentials
+        </p>
       </div>
 
+      {/* Users Table */}
+      <div className="border-2 border-black bg-white retro-shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse font-mono text-xs">
+            <thead>
+              <tr className="border-b-2 border-black bg-retro-cream text-left">
+                {['USERNAME', 'EMAIL ADDRESS', 'ACCESS ROLE', 'ONBOARDING DATE', 'SECURITY COMMANDS'].map((h) => (
+                  <th key={h} className="p-3.5 font-bold uppercase tracking-wider text-black">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <TableRowSkeleton key={idx} cols={5} />
+                ))
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-12 text-center text-gray-500 uppercase tracking-widest">
+                    NO REGISTERED USER ACCOUNTS FOUND
+                  </td>
+                </tr>
+              ) : (
+                users.map((u) => (
+                  <tr key={u.id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <td className="p-3.5 font-bold text-black uppercase">{u.username}</td>
+                    <td className="p-3.5 text-gray-600">{u.email || '// NO_EMAIL'}</td>
+                    <td className="p-3.5">
+                      <span className={`inline-block border border-black px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${
+                        u.role === 'ROLE_ADMIN' ? 'bg-black text-retro-amber' : 'bg-retro-cream text-black'
+                      }`}>
+                        {u.role || 'ROLE_USER'}
+                      </span>
+                    </td>
+                    <td className="p-3.5 text-gray-600">{fmtDate(u.createdAt)}</td>
+                    <td className="p-3.5 w-32">
+                      {u.role !== 'ROLE_ADMIN' && (
+                        <button
+                          onClick={() => setDeleteTargetId(u.id)}
+                          className="retro-btn bg-retro-coral text-white font-bold text-[10px] uppercase px-2.5 py-1"
+                        >
+                          PURGE
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', marginTop: 24 }}>
-          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ padding: '8px 16px', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 600, fontSize: 12, background: '#fff', color: '#475569' }}>&larr; Prev</button>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>Page {page + 1} of {totalPages}</span>
-          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1} style={{ padding: '8px 16px', border: '1px solid #cbd5e1', cursor: 'pointer', fontWeight: 600, fontSize: 12, background: '#fff', color: '#475569' }}>Next &rarr;</button>
+        <div className="flex justify-center items-center gap-3 mt-6 font-mono text-xs">
+          <button
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+            className="retro-btn bg-white text-black font-bold uppercase px-3 py-1.5 disabled:opacity-40"
+          >
+            &larr; PREV
+          </button>
+          <span className="font-bold text-black uppercase tracking-wider">
+            PAGE {page + 1} / {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+            className="retro-btn bg-white text-black font-bold uppercase px-3 py-1.5 disabled:opacity-40"
+          >
+            NEXT &rarr;
+          </button>
         </div>
       )}
 
       <ConfirmModal
         isOpen={Boolean(deleteTargetId)}
-        title="Delete User"
-        message="Are you sure you want to delete this user? This account will permanently lose access."
+        title="PURGE USER ACCOUNT"
+        message="Are you certain you want to purge this user? Their account and access credentials will be irreversibly erased."
         isDanger={true}
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="CONFIRM PURGE"
+        cancelText="ABORT"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTargetId(null)}
       />

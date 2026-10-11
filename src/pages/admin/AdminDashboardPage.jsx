@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 import { CardSkeleton } from '../../components/Skeletons';
@@ -6,37 +6,37 @@ import { adminGetAllProducts, adminGetAllOrders, adminGetAllUsers, adminGetAllCa
 
 function StatCard({ label, value, icon, color, subtext, linkTo }) {
   return (
-    <Link to={linkTo || '#'} style={{ textDecoration: 'none', flex: 1, minWidth: 220 }}>
-      <div style={{
-        background: '#fff', padding: '24px', display: 'flex', alignItems: 'center',
-        gap: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0',
-        transition: 'transform 0.15s, box-shadow 0.15s', cursor: 'pointer',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)';
-      }}>
-        <div style={{
-          width: 52, height: 52, background: color + '15',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26,
-        }}>{icon}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em' }}>{value ?? '—'}</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#64748b', marginTop: 2 }}>{label}</div>
-          {subtext && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>{subtext}</div>}
+    <Link to={linkTo || '#'} className="block text-black no-underline">
+      <div className="bg-white border-2 border-black p-5 retro-shadow transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#000] relative">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="font-mono text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
+              {label}
+            </div>
+            <div className="font-mono text-3xl font-extrabold text-black">
+              {value ?? '—'}
+            </div>
+            {subtext && (
+              <div className="font-mono text-[10px] text-gray-600 uppercase tracking-wide mt-2">
+                // {subtext}
+              </div>
+            )}
+          </div>
+          <div className="w-12 h-12 border-2 border-black flex items-center justify-center text-xl shrink-0" style={{ backgroundColor: color }}>
+            {icon}
+          </div>
         </div>
       </div>
     </Link>
   );
 }
 
-const STATUS_COLORS = {
-  PENDING: '#d97706', PROCESSING: '#2563eb',
-  SHIPPED: '#7c3aed', DELIVERED: '#059669', CANCELLED: '#dc2626',
+const STATUS_BADGES = {
+  PENDING: 'bg-retro-amber text-black',
+  PROCESSING: 'bg-retro-blue text-white',
+  SHIPPED: 'bg-purple-600 text-white',
+  DELIVERED: 'bg-blue-600 text-white',
+  CANCELLED: 'bg-retro-coral text-white',
 };
 
 export default function AdminDashboardPage() {
@@ -78,85 +78,97 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminLayout>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+      {/* Top Header */}
+      <div className="border-2 border-black bg-white p-6 retro-shadow mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Dashboard Overview</h2>
-          <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0' }}>Summary and performance of your personal online store.</p>
+          <div className="inline-block bg-black text-retro-amber font-mono text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest mb-2">
+            CONTROL_PANEL // SYS_STATUS: ONLINE
+          </div>
+          <h2 className="font-extrabold text-3xl uppercase tracking-tight text-black m-0">
+            DASHBOARD OVERVIEW
+          </h2>
+          <p className="font-mono text-xs text-gray-600 uppercase tracking-wide mt-1">
+            Real-time analytics and inventory performance
+          </p>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <Link to="/admin/products" style={{
-            background: '#2563eb', color: '#fff', textDecoration: 'none', padding: '10px 18px',
-            fontSize: 13, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6,
-          }}>
-            <span>+</span> Add Product
+        <div className="flex gap-3">
+          <Link
+            to="/admin/products"
+            className="retro-btn bg-black text-white font-mono font-bold text-xs uppercase tracking-widest px-4 py-2.5"
+          >
+            + ADD PRODUCT
           </Link>
-          <Link to="/admin/categories" style={{
-            background: '#f1f5f9', color: '#334155', textDecoration: 'none', padding: '10px 18px',
-            fontSize: 13, fontWeight: 600, border: '1px solid #cbd5e1',
-          }}>
-            Categories
+          <Link
+            to="/admin/categories"
+            className="retro-btn bg-white text-black font-mono font-bold text-xs uppercase tracking-widest px-4 py-2.5"
+          >
+            CATEGORIES
           </Link>
         </div>
       </div>
 
       {/* Metrics Row */}
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 32 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 32 }}>
-          <StatCard label="Total Products" value={stats.products} icon="📦" color="#2563eb" linkTo="/admin/products" subtext="Live in store" />
-          <StatCard label="Total Orders" value={stats.orders} icon="🛒" color="#d97706" linkTo="/admin/orders" subtext="All customer orders" />
-          <StatCard label="Recent Revenue" value={fmt(stats.revenue)} icon="💰" color="#059669" linkTo="/admin/orders" subtext="From current orders" />
-          <StatCard label="Registered Customers" value={stats.users} icon="👥" color="#0284c7" linkTo="/admin/users" subtext="Active user accounts" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard label="Total Products" value={stats.products} icon="📦" color="#ffde59" linkTo="/admin/products" subtext="Live in catalog" />
+          <StatCard label="Total Orders" value={stats.orders} icon="🛒" color="#67e8f9" linkTo="/admin/orders" subtext="Customer checkouts" />
+          <StatCard label="Recent Revenue" value={fmt(stats.revenue)} icon="💰" color="#93c5fd" linkTo="/admin/orders" subtext="Completed cycles" />
+          <StatCard label="Registered Users" value={stats.users} icon="👥" color="#fca5a5" linkTo="/admin/users" subtext="Active accounts" />
         </div>
       )}
 
-      {/* Quick Actions & Recent Orders Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
-        {/* Recent Orders Card */}
-        <div style={{ background: '#fff', border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      {/* Split Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Orders Table */}
+        <div className="lg:col-span-2 border-2 border-black bg-white p-6 retro-shadow">
+          <div className="flex justify-between items-center pb-4 mb-4 border-b-2 border-black">
             <div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: 0 }}>Recent Orders</h3>
-              <p style={{ fontSize: 12, color: '#94a3b8', margin: '2px 0 0' }}>Latest customer transactions</p>
+              <h3 className="font-extrabold text-xl uppercase tracking-tight text-black m-0">
+                RECENT TRANSACTIONS
+              </h3>
+              <span className="font-mono text-[10px] text-gray-500 uppercase tracking-widest">
+                // LATEST ACTIVITY LOG
+              </span>
             </div>
-            <Link to="/admin/orders" style={{ fontSize: 13, color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
-              View All &rarr;
+            <Link
+              to="/admin/orders"
+              className="font-mono text-xs font-bold text-retro-blue hover:underline uppercase tracking-wider"
+            >
+              VIEW ALL &rarr;
             </Link>
           </div>
 
           {recentOrders.length === 0 ? (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: '#94a3b8', fontSize: 14 }}>
-              No recent orders found.
+            <div className="py-12 text-center font-mono text-xs uppercase tracking-widest text-gray-500">
+              NO TRANSACTION RECORDS FOUND
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse font-mono text-xs">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
-                    <th style={{ padding: '10px 12px', fontSize: 12, color: '#64748b', fontWeight: 600 }}>Order ID</th>
-                    <th style={{ padding: '10px 12px', fontSize: 12, color: '#64748b', fontWeight: 600 }}>Customer</th>
-                    <th style={{ padding: '10px 12px', fontSize: 12, color: '#64748b', fontWeight: 600 }}>Total</th>
-                    <th style={{ padding: '10px 12px', fontSize: 12, color: '#64748b', fontWeight: 600 }}>Date</th>
-                    <th style={{ padding: '10px 12px', fontSize: 12, color: '#64748b', fontWeight: 600 }}>Status</th>
+                  <tr className="border-b-2 border-black bg-retro-cream text-left">
+                    <th className="p-3 uppercase tracking-wider font-bold">ORDER_ID</th>
+                    <th className="p-3 uppercase tracking-wider font-bold">CUSTOMER</th>
+                    <th className="p-3 uppercase tracking-wider font-bold">AMOUNT</th>
+                    <th className="p-3 uppercase tracking-wider font-bold">DATE</th>
+                    <th className="p-3 uppercase tracking-wider font-bold">STATUS</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentOrders.map((o) => (
-                    <tr key={o.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '12px', fontSize: 12, fontFamily: 'monospace', color: '#64748b' }}>{o.id?.slice(0, 8)}…</td>
-                      <td style={{ padding: '12px', fontSize: 13, fontWeight: 600, color: '#1e293b' }}>{o.username || o.userId || '—'}</td>
-                      <td style={{ padding: '12px', fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{fmt(o.totalAmount || o.total || 0)}</td>
-                      <td style={{ padding: '12px', fontSize: 12, color: '#64748b' }}>{fmtDate(o.createdAt)}</td>
-                      <td style={{ padding: '12px' }}>
-                        <span style={{
-                          padding: '3px 8px', fontSize: 11, fontWeight: 700,
-                          background: (STATUS_COLORS[o.status] || '#94a3b8') + '18',
-                          color: STATUS_COLORS[o.status] || '#94a3b8',
-                        }}>{o.status}</span>
+                    <tr key={o.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <td className="p-3 font-bold text-retro-blue">#{o.id?.slice(0, 8)}</td>
+                      <td className="p-3 font-bold text-black">{o.username || o.userId || '—'}</td>
+                      <td className="p-3 font-bold text-black">{fmt(o.totalAmount || o.total || 0)}</td>
+                      <td className="p-3 text-gray-600">{fmtDate(o.createdAt)}</td>
+                      <td className="p-3">
+                        <span className={`inline-block border border-black px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${STATUS_BADGES[o.status] || 'bg-gray-200 text-black'}`}>
+                          {o.status}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -166,51 +178,40 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        {/* Quick Links & Tips */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div style={{ background: '#fff', border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: '0 0 16px' }}>Quick Navigation</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <Link to="/admin/products" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px',
-                background: '#f8fafc', textDecoration: 'none', color: '#1e293b', fontSize: 13, fontWeight: 600,
-                border: '1px solid #e2e8f0',
-              }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>📦 Products Management</span>
-                <span style={{ color: '#2563eb' }}>&rarr;</span>
-              </Link>
-              <Link to="/admin/categories" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px',
-                background: '#f8fafc', textDecoration: 'none', color: '#1e293b', fontSize: 13, fontWeight: 600,
-                border: '1px solid #e2e8f0',
-              }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>🏷️ Categories Catalog</span>
-                <span style={{ color: '#2563eb' }}>&rarr;</span>
-              </Link>
-              <Link to="/admin/orders" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px',
-                background: '#f8fafc', textDecoration: 'none', color: '#1e293b', fontSize: 13, fontWeight: 600,
-                border: '1px solid #e2e8f0',
-              }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>🛒 Customer Orders</span>
-                <span style={{ color: '#2563eb' }}>&rarr;</span>
-              </Link>
-              <Link to="/admin/users" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px',
-                background: '#f8fafc', textDecoration: 'none', color: '#1e293b', fontSize: 13, fontWeight: 600,
-                border: '1px solid #e2e8f0',
-              }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>👥 Registered Users</span>
-                <span style={{ color: '#2563eb' }}>&rarr;</span>
-              </Link>
+        {/* Quick Links / Status Panel */}
+        <div className="flex flex-col gap-6">
+          <div className="border-2 border-black bg-white p-6 retro-shadow">
+            <h3 className="font-extrabold text-lg uppercase tracking-tight text-black mb-4 pb-2 border-b-2 border-black">
+              QUICK COMMANDS
+            </h3>
+            <div className="flex flex-col gap-3 font-mono text-xs">
+              {[
+                { to: '/admin/products', label: '📦 PRODUCT CATALOG' },
+                { to: '/admin/categories', label: '🏷️ CATEGORY TAXONOMY' },
+                { to: '/admin/orders', label: '🛒 ORDER DISPATCH' },
+                { to: '/admin/users', label: '👥 USER DIRECTORY' },
+              ].map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="flex items-center justify-between p-3 border-2 border-black bg-retro-cream hover:bg-retro-amber font-bold text-black no-underline transition-colors shadow-[2px_2px_0px_#000]"
+                >
+                  <span>{item.label}</span>
+                  <span>&rarr;</span>
+                </Link>
+              ))}
             </div>
           </div>
 
-          <div style={{ background: '#2563eb', padding: '24px', color: '#fff' }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>💡</div>
-            <h4 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 700 }}>Single-Vendor Store Tip</h4>
-            <p style={{ margin: 0, fontSize: 12, opacity: 0.9, lineHeight: 1.5 }}>
-              Pastikan stok produk selalu terisi dan pantau status pesanan pelanggan secara berkala untuk menjaga kepuasan pembeli Anda.
+          <div className="border-2 border-black bg-retro-amber p-6 retro-shadow">
+            <div className="inline-block bg-black text-retro-amber font-mono text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-widest mb-3">
+              SYSTEM MEMO
+            </div>
+            <h4 className="font-extrabold text-base uppercase tracking-tight text-black mb-2">
+              OPERATIONAL PROTOCOL
+            </h4>
+            <p className="font-mono text-xs text-black/80 uppercase leading-relaxed m-0">
+              Pastikan stok barang selalu sinkron dengan status inventaris fisik untuk mencegah pesanan tertunda.
             </p>
           </div>
         </div>

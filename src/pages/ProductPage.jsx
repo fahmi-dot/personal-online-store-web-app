@@ -89,77 +89,80 @@ const ProductPage = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Page Title */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-gray-900 uppercase tracking-tight">
-          Product Catalog
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Discover our exclusive collection of quality goods
-        </p>
+      {/* Retro Directory Header */}
+      <div className="flex flex-wrap items-end justify-between border-b-2 border-black pb-4 mb-6 gap-4">
+        <div>
+          <span className="font-mono text-xs font-bold uppercase tracking-widest text-black bg-retro-amber border border-black px-2 py-0.5 inline-block mb-1">
+            CATALOG ARCHIVE // ALL ITEMS
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-black">
+            PRODUCTS DIRECTORY
+          </h1>
+        </div>
+        <div className="font-mono text-xs font-bold text-gray-700 bg-white border-2 border-black px-3 py-1.5 retro-shadow-sm">
+          INDEX: {products.length} ITEMS
+        </div>
       </div>
 
-      <div className="border-t border-gray-200 mb-6"></div>
-
-      {/* Filter & Search Bar */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-8 space-y-4">
+      {/* Filter & Search Bar Retro Box */}
+      <div className="bg-white p-5 border-2 border-black retro-shadow mb-8 space-y-4">
         <form onSubmit={handleSearchSubmit} className="flex gap-2">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search catalog by keyword..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="flex-1 px-4 py-2.5 border-2 border-black font-mono text-xs sm:text-sm focus:outline-none focus:bg-amber-50"
           />
           <button
             type="submit"
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors uppercase tracking-wider"
+            className="retro-btn px-6 py-2.5 bg-black hover:bg-retro-blue text-white font-mono text-xs font-bold uppercase tracking-wider"
           >
-            Search
+            Filter &crarr;
           </button>
         </form>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase text-gray-500 tracking-wider">
-              Sort By:
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t-2 border-dashed border-gray-300">
+          <div className="flex items-center gap-2 font-mono text-xs">
+            <span className="font-bold uppercase text-black">
+              ORDER_BY:
             </span>
             <select
               value={sortBy === 'price' ? `price_${sortDirection}` : sortBy === 'name' && sortDirection === 'desc' ? 'name_desc' : 'name_asc'}
               onChange={handleSortChange}
-              className="text-xs font-semibold border border-gray-300 px-2 py-1.5 bg-white text-gray-700 focus:outline-none"
+              className="font-mono font-bold text-xs border-2 border-black px-2.5 py-1.5 bg-white text-black focus:outline-none cursor-pointer"
             >
-              <option value="name_asc">Name (A-Z)</option>
-              <option value="name_desc">Name (Z-A)</option>
-              <option value="price_asc">Price (Low to High)</option>
-              <option value="price_desc">Price (High to Low)</option>
+              <option value="name_asc">ALPHABETICAL (A-Z)</option>
+              <option value="name_desc">ALPHABETICAL (Z-A)</option>
+              <option value="price_asc">PRICE: LOW &rarr; HIGH</option>
+              <option value="price_desc">PRICE: HIGH &rarr; LOW</option>
             </select>
           </div>
         </div>
 
-        {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 scrollbar-none">
+        {/* Category Pills Retro Buttons */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none font-mono text-xs">
           <button
             onClick={() => handleCategorySelect('')}
-            className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+            className={`px-3.5 py-1.5 border-2 border-black font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
               selectedCategory === ''
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-black text-white retro-shadow-sm'
+                : 'bg-white text-black hover:bg-retro-amber'
             }`}
           >
-            All Categories
+            [ALL]
           </button>
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleCategorySelect(cat.id)}
-              className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap ${
+              className={`px-3.5 py-1.5 border-2 border-black font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                 selectedCategory === cat.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-retro-blue text-white retro-shadow-sm'
+                  : 'bg-white text-black hover:bg-retro-amber'
               }`}
             >
-              {cat.name}
+              #{cat.name}
             </button>
           ))}
         </div>

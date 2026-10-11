@@ -60,6 +60,13 @@ export const getMyOrders = (params = {}) => api.get('/user/orders', { params });
 export const createOrder = (data) => api.post('/user/orders', data);
 export const cancelOrder = (id) => api.put(`/user/orders/${id}/cancel`);
 
+// Address APIs
+export const getMyAddresses = () => api.get('/user/addresses');
+export const createAddress = (data) => api.post('/user/addresses', data);
+export const updateAddress = (id, data) => api.put(`/user/addresses/${id}`, data);
+export const setPrimaryAddress = (id) => api.put(`/user/addresses/${id}/primary`);
+export const deleteAddress = (id) => api.delete(`/user/addresses/${id}`);
+
 export const getMyCart = () => api.get('/user/cart');
 export const addProductToCart = (data) => api.post('/user/cart', data);
 export const updateCartItem = (detailId, quantity) => api.put(`/user/cart/${detailId}`, null, { params: { quantity } });

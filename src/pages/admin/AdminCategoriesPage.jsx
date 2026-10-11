@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import AdminLayout from '../../components/AdminLayout';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -7,11 +7,6 @@ import { showSuccessToast, showErrorToast } from '../../redux/slices/toastSlice'
 import {
   adminGetAllCategories, adminCreateCategory, adminUpdateCategory, adminDeleteCategory
 } from '../../services/api';
-
-const btn = (color, textColor = '#fff') => ({
-  padding: '8px 16px', border: 'none', cursor: 'pointer',
-  fontWeight: 600, fontSize: 13, background: color, color: textColor,
-});
 
 function Modal({ title, initial, onSave, onClose }) {
   const [name, setName] = useState(initial?.name || '');
@@ -26,22 +21,66 @@ function Modal({ title, initial, onSave, onClose }) {
   };
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100,
-    }}>
-      <div style={{ background: '#fff', padding: 32, width: 420, boxShadow: '0 8px 30px rgba(0,0,0,0.18)' }}>
-        <h3 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 700 }}>{title}</h3>
-        <label style={{ display: 'block', fontSize: 13, color: '#475569', marginBottom: 4 }}>Name *</label>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category name"
-          style={{ width: '100%', padding: '10px 12px', border: '1px solid #cbd5e1', fontSize: 14, marginBottom: 14, boxSizing: 'border-box' }} />
-        <label style={{ display: 'block', fontSize: 13, color: '#475569', marginBottom: 4 }}>Description</label>
-        <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="Optional description"
-          style={{ width: '100%', padding: '10px 12px', border: '1px solid #cbd5e1', fontSize: 14, marginBottom: 20, resize: 'vertical', boxSizing: 'border-box' }} />
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-          <button onClick={onClose} disabled={submitting} style={btn('#f1f5f9', '#475569')}>Cancel</button>
-          <button onClick={handleSubmit} disabled={submitting || !name.trim()} style={{ ...btn('#2563eb'), opacity: submitting ? 0.7 : 1 }}>
-            {submitting ? 'Saving...' : 'Save'}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+      <div className="bg-white border-4 border-black p-6 md:p-8 w-full max-w-md retro-shadow-lg font-mono text-xs">
+        <div className="flex justify-between items-center pb-3 mb-5 border-b-2 border-black">
+          <div>
+            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+              TAXONOMY_ENTRY
+            </div>
+            <h3 className="font-extrabold text-xl uppercase tracking-tight text-black m-0 font-sans">
+              {title}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 border-2 border-black bg-white hover:bg-black hover:text-white font-mono font-bold text-sm cursor-pointer transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block font-bold uppercase tracking-wider text-black mb-1">
+              CATEGORY IDENTIFIER <span className="text-retro-coral">*</span>
+            </label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. OUTERWEAR"
+              className="w-full border-2 border-black p-2.5 bg-white text-black outline-none focus:bg-retro-cream uppercase"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold uppercase tracking-wider text-black mb-1">
+              SCOPE / DESCRIPTION
+            </label>
+            <textarea
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              rows={3}
+              placeholder="Classification details..."
+              className="w-full border-2 border-black p-2.5 bg-white text-black outline-none focus:bg-retro-cream resize-y"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-5 mt-6 border-t-2 border-black">
+          <button
+            onClick={onClose}
+            disabled={submitting}
+            className="retro-btn bg-white text-black font-bold uppercase px-4 py-2"
+          >
+            CANCEL
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || !name.trim()}
+            className="retro-btn bg-black text-white font-bold uppercase px-4 py-2 disabled:opacity-50"
+          >
+            {submitting ? 'RECORDING...' : 'COMMIT ENTRY'}
           </button>
         </div>
       </div>
@@ -100,58 +139,94 @@ export default function AdminCategoriesPage() {
 
   return (
     <AdminLayout>
-      {modal && <Modal title={modal.mode === 'create' ? 'New Category' : 'Edit Category'} initial={modal.data} onSave={handleSave} onClose={() => setModal(null)} />}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      {modal && (
+        <Modal
+          title={modal.mode === 'create' ? 'NEW CATEGORY' : 'EDIT CATEGORY'}
+          initial={modal.data}
+          onSave={handleSave}
+          onClose={() => setModal(null)}
+        />
+      )}
+
+      {/* Header */}
+      <div className="border-2 border-black bg-white p-6 retro-shadow mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: 0 }}>Categories</h2>
-          <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0' }}>Organize products into distinct shop categories.</p>
+          <div className="inline-block bg-black text-retro-amber font-mono text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest mb-2">
+            TAXONOMY // SYSTEM_INDEX
+          </div>
+          <h2 className="font-extrabold text-3xl uppercase tracking-tight text-black m-0">
+            PRODUCT CATEGORIES
+          </h2>
+          <p className="font-mono text-xs text-gray-600 uppercase tracking-wide mt-1">
+            Organize catalog structures and taxonomy tags
+          </p>
         </div>
-        <button onClick={() => setModal({ mode: 'create' })} style={{ ...btn('#2563eb'), padding: '10px 20px' }}>
-          <span>+</span> New Category
+        <button
+          onClick={() => setModal({ mode: 'create' })}
+          className="retro-btn bg-black text-white font-mono font-bold text-xs uppercase tracking-widest px-5 py-3 cursor-pointer"
+        >
+          + NEW CATEGORY
         </button>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              {['Name', 'Description', 'Actions'].map((h) => (
-                <th key={h} style={{ padding: '14px 20px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              Array.from({ length: 4 }).map((_, idx) => (
-                <TableRowSkeleton key={idx} cols={3} />
-              ))
-            ) : categories.length === 0 ? (
-              <tr><td colSpan={3} style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No categories yet.</td></tr>
-            ) : (
-              categories.map((cat) => (
-                <tr key={cat.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '14px 20px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{cat.name}</td>
-                  <td style={{ padding: '14px 20px', fontSize: 13, color: '#64748b' }}>{cat.description || '—'}</td>
-                  <td style={{ padding: '14px 20px' }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={() => setModal({ mode: 'edit', data: cat })} style={btn('#2563eb')}>Edit</button>
-                      <button onClick={() => setDeleteTargetId(cat.id)} style={btn('#dc2626')}>Delete</button>
-                    </div>
+      {/* Categories Table */}
+      <div className="border-2 border-black bg-white retro-shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse font-mono text-xs">
+            <thead>
+              <tr className="border-b-2 border-black bg-retro-cream text-left">
+                {['CLASSIFICATION NAME', 'SCOPE DESCRIPTION', 'COMMANDS'].map((h) => (
+                  <th key={h} className="p-3.5 font-bold uppercase tracking-wider text-black">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 4 }).map((_, idx) => (
+                  <TableRowSkeleton key={idx} cols={3} />
+                ))
+              ) : categories.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="p-12 text-center text-gray-500 uppercase tracking-widest">
+                    NO CATEGORY TAXONOMIES CONFIGURED
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                categories.map((cat) => (
+                  <tr key={cat.id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <td className="p-3.5 font-bold text-black uppercase tracking-wide">{cat.name}</td>
+                    <td className="p-3.5 text-gray-600">{cat.description || '// NO SPECIFICATION'}</td>
+                    <td className="p-3.5 w-44">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setModal({ mode: 'edit', data: cat })}
+                          className="retro-btn bg-retro-blue text-white font-bold text-[10px] uppercase px-2.5 py-1"
+                        >
+                          EDIT
+                        </button>
+                        <button
+                          onClick={() => setDeleteTargetId(cat.id)}
+                          className="retro-btn bg-retro-coral text-white font-bold text-[10px] uppercase px-2.5 py-1"
+                        >
+                          DELETE
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <ConfirmModal
         isOpen={Boolean(deleteTargetId)}
-        title="Delete Category"
-        message="Are you sure you want to delete this category? Products assigned to it might be affected."
+        title="PURGE CATEGORY"
+        message="Are you certain you want to purge this category? Assigned products may lose their classification tags."
         isDanger={true}
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="CONFIRM PURGE"
+        cancelText="ABORT"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTargetId(null)}
       />

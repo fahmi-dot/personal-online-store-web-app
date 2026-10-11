@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import ProductCartCard from '../components/ProductCartCard';
 import ConfirmModal from '../components/ConfirmModal';
 import { showSuccessToast, showErrorToast } from '../redux/slices/toastSlice';
-import { getMyCart, updateCartItem, deleteCartItem, clearCart, createOrder } from '../services/api';
+import { getMyCart, updateCartItem, deleteCartItem, clearCart, createOrder, getMyAddresses } from '../services/api';
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,11 @@ const CartPage = () => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  
+  // Addresses state
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: '',
@@ -23,14 +28,23 @@ const CartPage = () => {
   });
   const navigate = useNavigate();
 
-  const fetchCart = async () => {
+  const fetchCartAndAddresses = async () => {
     try {
       setLoading(true);
       setErrorMessage('');
-      const response = await getMyCart();
-      setCart(response.data.data);
+      const [cartRes, addrRes] = await Promise.all([
+        getMyCart(),
+        getMyAddresses().catch(() => ({ data: { data: [] } })),
+      ]);
+      setCart(cartRes.data.data);
+      const addrList = addrRes.data.data || [];
+      setAddresses(addrList);
+      if (addrList.length > 0) {
+        const primary = addrList.find((a) => a.isPrimary) || addrList[0];
+        setSelectedAddressId(primary.id);
+      }
     } catch (error) {
-      console.error("Error fetching cart:", error);
+      console.error("Error fetching cart/addresses:", error);
       const msg = error.response?.data?.message || "Failed to load your cart. Please ensure you are logged in.";
       setErrorMessage(msg);
       dispatch(showErrorToast(msg));
@@ -40,7 +54,7 @@ const CartPage = () => {
   };
 
   useEffect(() => {
-    fetchCart();
+    fetchCartAndAddresses();
   }, []);
 
   const handleUpdateQuantity = async (detailId, newQuantity) => {
@@ -175,8 +189,8 @@ const CartPage = () => {
 
       {/* Success Alert */}
       {checkoutSuccess && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg flex items-center gap-3">
-          <svg className="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="mb-6 p-4 bg-blue-50 border-2 border-black text-blue-900 flex items-center gap-3 retro-shadow-sm">
+          <svg className="w-6 h-6 text-retro-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
           </svg>
           <div>
@@ -188,28 +202,31 @@ const CartPage = () => {
 
       {/* Error Alert */}
       {errorMessage && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">
           {errorMessage}
         </div>
       )}
 
       {/* Empty State */}
       {items.length === 0 ? (
-        <div className="bg-white border border-gray-100 rounded-xl p-12 text-center max-w-lg mx-auto shadow-sm my-8">
-          <div className="w-20 h-20 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white border-2 border-black retro-shadow-lg p-12 text-center max-w-lg mx-auto my-8">
+          <div className="w-20 h-20 bg-retro-amber border-2 border-black text-black flex items-center justify-center mx-auto mb-5 retro-shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Your Cart is Empty</h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Looks like you haven't added any products to your shopping cart yet.
+          <span className="font-mono text-xs font-bold uppercase tracking-widest text-gray-500 block mb-1">
+            CART STATUS // ZERO ITEMS
+          </span>
+          <h2 className="text-2xl font-extrabold uppercase tracking-tight text-black mb-3">YOUR BAG IS EMPTY</h2>
+          <p className="font-mono text-xs text-gray-600 mb-6 max-w-sm mx-auto leading-relaxed">
+            There are no recorded items in your session bag. Explore our archive to add vintage goods.
           </p>
           <Link
             to="/product"
-            className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold text-sm hover:bg-gray-800 transition-colors uppercase tracking-wider"
+            className="retro-btn inline-block bg-black hover:bg-retro-blue text-white px-8 py-3.5 font-mono font-bold text-xs uppercase tracking-wider"
           >
-            Start Shopping
+            Browse Products &rarr;
           </Link>
         </div>
       ) : (
@@ -228,19 +245,56 @@ const CartPage = () => {
             ))}
           </div>
 
-          {/* Order Summary Sidebar */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm sticky top-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wider">
-              Order Summary
-            </h2>
-            <div className="space-y-3 text-sm text-gray-600 border-b border-gray-100 pb-4">
+          {/* Order Summary Sidebar - Cashier Bill Style */}
+          <div className="bg-white border-2 border-black retro-shadow-lg p-6 sticky top-6">
+            <div className="flex items-center justify-between border-b-2 border-black pb-2 mb-4">
+              <h2 className="text-base font-extrabold text-black uppercase tracking-wider">
+                INVOICE SUMMARY
+              </h2>
+              <span className="font-mono text-[10px] font-bold bg-retro-amber border border-black px-1.5 py-0.5">
+                BILLING
+              </span>
+            </div>
+
+            {/* Shipping Address Selector */}
+            <div className="mb-4 pb-4 border-b border-gray-100 text-xs">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-bold uppercase tracking-wider text-gray-700">Shipping Address</span>
+                <Link to="/profile" className="text-blue-600 hover:underline font-semibold uppercase text-[11px]">
+                  Manage
+                </Link>
+              </div>
+
+              {addresses.length === 0 ? (
+                <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800">
+                  <p className="font-semibold mb-1">No shipping address found.</p>
+                  <Link to="/profile" className="text-blue-600 font-bold hover:underline">
+                    Add address in Profile &rarr;
+                  </Link>
+                </div>
+              ) : (
+                <select
+                  value={selectedAddressId}
+                  onChange={(e) => setSelectedAddressId(e.target.value)}
+                  className="w-full p-2 border border-gray-300 bg-white font-medium text-gray-800 focus:outline-none focus:border-blue-600 text-xs"
+                >
+                  {addresses.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      [{a.label}] {a.recipientName} - {a.city} {a.isPrimary ? '(Primary)' : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            <div className="space-y-3 text-xs text-gray-600 border-b border-gray-100 pb-4">
               <div className="flex justify-between">
                 <span>Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} items)</span>
                 <span className="font-semibold text-gray-900">${grandTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Estimated Shipping</span>
-                <span className="text-green-600 font-semibold">Free</span>
+                <span className="text-retro-blue font-bold uppercase tracking-wider">Free</span>
               </div>
               <div className="flex justify-between">
                 <span>Taxes</span>
@@ -249,23 +303,25 @@ const CartPage = () => {
             </div>
 
             <div className="flex justify-between items-center py-4 text-base font-extrabold text-gray-900">
-              <span>Total Amount</span>
+              <span className="uppercase tracking-tight">Total Amount</span>
               <span className="text-2xl">${grandTotal.toFixed(2)}</span>
             </div>
 
             <button
               type="button"
-              disabled={isCheckingOut || checkoutSuccess}
+              disabled={isCheckingOut || checkoutSuccess || addresses.length === 0}
               onClick={handleCheckout}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 uppercase tracking-wider text-sm transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="retro-btn w-full bg-retro-blue hover:bg-blue-700 text-white font-mono font-bold py-4 px-4 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isCheckingOut ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Processing Order...
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin"></div>
+                  SUBMITTING RECORD...
                 </>
+              ) : addresses.length === 0 ? (
+                "SELECT ADDRESS TO CONTINUE"
               ) : (
-                "Proceed to Checkout"
+                "CONFIRM & CHECKOUT &rarr;"
               )}
             </button>
 

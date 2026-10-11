@@ -101,24 +101,6 @@ const ProductDetailPage = () => {
         <span className="text-gray-900 font-semibold truncate">{product.name}</span>
       </nav>
 
-      {/* Success Notification */}
-      {addSuccess && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="font-semibold text-sm">Product successfully added to your cart!</span>
-          </div>
-          <Link
-            to="/cart"
-            className="text-xs font-bold bg-green-700 hover:bg-green-800 text-white px-3 py-1.5 rounded transition-colors uppercase tracking-wider"
-          >
-            View Cart
-          </Link>
-        </div>
-      )}
-
       {/* Error Notification */}
       {errorMessage && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
@@ -127,38 +109,54 @@ const ProductDetailPage = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
-        {/* Product Image */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden aspect-square flex items-center justify-center relative">
-          <img
-            src={product.photoUrl || DEFAULT_IMAGE}
-            className="w-full h-full object-cover object-center"
-            alt={product.name}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = DEFAULT_IMAGE;
-            }}
-          />
-          {product.categoryName && (
-            <span className="absolute top-4 left-4 bg-black/70 text-white text-xs font-semibold px-3 py-1 rounded backdrop-blur-sm">
-              {product.categoryName}
-            </span>
-          )}
+        {/* Retro Spec Product Image */}
+        <div className="bg-white border-2 border-black retro-shadow-lg p-3 relative">
+          <div className="absolute top-0 right-6 bg-retro-coral text-white font-mono text-[10px] font-bold px-2.5 py-1 border-x-2 border-b-2 border-black uppercase tracking-wider z-10">
+            ITEM_ID: #{product.id?.substring(0, 6)}
+          </div>
+          <div className="bg-gray-100 border-2 border-black overflow-hidden aspect-square flex items-center justify-center relative">
+            <img
+              src={product.photoUrl || DEFAULT_IMAGE}
+              className="w-full h-full object-cover object-center contrast-105"
+              alt={product.name}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = DEFAULT_IMAGE;
+              }}
+            />
+            {product.categoryName && (
+              <span className="absolute bottom-3 left-3 bg-black text-white font-mono text-xs font-bold uppercase px-3 py-1 border border-white">
+                CLASSIFICATION: {product.categoryName}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Product Details & Purchase Form */}
-        <div className="flex flex-col space-y-6">
+        {/* Product Details & Purchase Form Box */}
+        <div className="bg-white border-2 border-black retro-shadow-lg p-6 sm:p-8 flex flex-col space-y-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 uppercase tracking-tight mb-2">
+            <div className="font-mono text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+              AUTHENTIC RECORD // STUDIO PIECE
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-black uppercase tracking-tight mb-3">
               {product.name}
             </h1>
-            <div className="flex items-center gap-4">
-              <span className="text-2xl sm:text-3xl font-bold text-gray-900">
-                ${Number(product.price).toFixed(2)}
+            <div className="flex flex-wrap items-center gap-4 pt-2 border-t-2 border-black pb-3">
+              <span className="font-mono text-3xl font-extrabold text-black">
+                Rp{Number(product.price).toLocaleString('id-ID')}
               </span>
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                isOutOfStock ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+              <span className={`font-mono text-xs font-bold uppercase tracking-wider px-3 py-1 border-2 border-black ${
+                isOutOfStock 
+                  ? 'bg-retro-coral text-white' 
+                  : product.stock <= 5 
+                  ? 'bg-retro-amber text-black animate-pulse'
+                  : 'bg-blue-100 text-retro-blue font-bold'
               }`}>
-                {isOutOfStock ? 'Out of Stock' : `In Stock (${product.stock} available)`}
+                {isOutOfStock 
+                  ? 'STATUS: OUT OF STOCK' 
+                  : product.stock <= 5 
+                  ? `ALERT: ONLY ${product.stock} LEFT` 
+                  : `IN STOCK // ${product.stock} UNITS`}
               </span>
             </div>
           </div>
@@ -229,23 +227,23 @@ const ProductDetailPage = () => {
               Quantity
             </h2>
             <div className="flex items-center space-x-2">
-              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex items-center border-2 border-black overflow-hidden bg-white retro-shadow-sm">
                 <button
                   type="button"
                   disabled={quantity <= 1 || isOutOfStock}
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 bg-gray-100 hover:bg-retro-amber text-black font-mono font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-base"
                 >
                   -
                 </button>
-                <span className="px-5 py-2 font-bold text-gray-900 bg-white min-w-[3rem] text-center">
+                <span className="px-5 py-2 font-mono font-bold text-black bg-white min-w-[3rem] text-center text-sm">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   disabled={quantity >= product.stock || isOutOfStock}
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 bg-gray-100 hover:bg-retro-amber text-black font-mono font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-base"
                 >
                   +
                 </button>
@@ -259,12 +257,12 @@ const ProductDetailPage = () => {
               type="button"
               disabled={isOutOfStock || isAdding}
               onClick={handleAddToCart}
-              className="w-full py-3.5 px-6 text-sm font-bold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="retro-btn w-full py-4 px-6 text-sm font-mono font-bold uppercase tracking-widest bg-retro-blue hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isAdding ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Adding to Cart...
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin"></div>
+                  ADDING RECORD...
                 </>
               ) : isOutOfStock ? (
                 "Out of Stock"

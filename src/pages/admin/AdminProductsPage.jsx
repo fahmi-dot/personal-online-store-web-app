@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import AdminLayout from '../../components/AdminLayout';
 import ConfirmModal from '../../components/ConfirmModal';
@@ -8,18 +8,6 @@ import {
   adminGetAllCategories, adminGetAllProducts,
   adminCreateProduct, adminUpdateProduct, adminDeleteProduct,
 } from '../../services/api';
-
-const btn = (color, textColor = '#fff') => ({
-  padding: '8px 16px', border: 'none', cursor: 'pointer',
-  fontWeight: 600, fontSize: 13, background: color, color: textColor,
-  display: 'inline-flex', alignItems: 'center', gap: 6,
-});
-
-const inputStyle = {
-  width: '100%', padding: '10px 14px',
-  border: '1px solid #cbd5e1', fontSize: 14, boxSizing: 'border-box',
-  outline: 'none',
-};
 
 function ProductModal({ initial, categories, onSave, onClose }) {
   const dispatch = useDispatch();
@@ -86,86 +74,141 @@ function ProductModal({ initial, categories, onSave, onClose }) {
   };
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 20,
-    }}>
-      <div style={{ background: '#fff', padding: 32, width: 540, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+      <div className="bg-white border-4 border-black p-6 md:p-8 w-full max-w-xl max-h-[90vh] overflow-y-auto retro-shadow-lg">
+        <div className="flex justify-between items-center pb-4 mb-6 border-b-2 border-black">
           <div>
-            <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#0f172a' }}>{isEdit ? 'Edit Product' : 'Add New Product'}</h3>
-            <p style={{ margin: '2px 0 0', fontSize: 12, color: '#64748b' }}>Provide full details for your catalog item.</p>
+            <div className="font-mono text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+              RECORD_ENTRY // {isEdit ? 'UPDATE' : 'CREATE'}
+            </div>
+            <h3 className="font-extrabold text-2xl uppercase tracking-tight text-black m-0">
+              {isEdit ? 'EDIT PRODUCT' : 'NEW PRODUCT ENTRY'}
+            </h3>
           </div>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer', color: '#94a3b8' }}>&times;</button>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 border-2 border-black bg-white hover:bg-black hover:text-white font-mono font-bold text-sm cursor-pointer transition-colors"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* Image upload preview */}
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 8 }}>
-            Product Image {!isEdit && <span style={{ color: '#dc2626' }}>*</span>}
+        {/* Image Upload Area */}
+        <div className="mb-6">
+          <label className="block font-mono text-xs font-bold uppercase tracking-wider text-black mb-2">
+            PRODUCT VISUAL {!isEdit && <span className="text-retro-coral">*</span>}
           </label>
           <div
             onClick={() => fileRef.current.click()}
-            style={{
-              border: '2px dashed #cbd5e1', padding: '24px',
-              textAlign: 'center', cursor: 'pointer', background: '#f8fafc',
-              position: 'relative', overflow: 'hidden',
-            }}
+            className="border-2 border-dashed border-black bg-retro-cream p-6 text-center cursor-pointer hover:bg-retro-amber/20 transition-colors"
           >
             {preview ? (
               <div>
-                <img src={preview} alt="preview" style={{ maxHeight: 150, maxWidth: '100%', objectFit: 'contain' }} />
-                <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600, marginTop: 8 }}>Click to change photo</div>
+                <img src={preview} alt="preview" className="max-h-40 mx-auto object-contain border-2 border-black" />
+                <div className="font-mono text-[11px] font-bold text-retro-blue uppercase tracking-wider mt-3">
+                  Click to replace image
+                </div>
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: 36, marginBottom: 4 }}>📷</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>Click or drag image to upload</div>
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Supports JPG, PNG up to 5MB</div>
+                <div className="text-3xl mb-2">📷</div>
+                <div className="font-mono text-xs font-bold uppercase tracking-wider text-black">
+                  UPLOAD SPECIMEN IMAGE
+                </div>
+                <div className="font-mono text-[10px] text-gray-500 uppercase mt-1">
+                  JPG, PNG, WEBP (MAX 5MB)
+                </div>
               </div>
             )}
           </div>
-          <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp" style={{ display: 'none' }} onChange={handleFile} />
-          {isEdit && <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Keep blank if you don't want to change the image.</p>}
+          <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp" className="hidden" onChange={handleFile} />
         </div>
 
-        {/* Product Name */}
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>Product Name <span style={{ color: '#dc2626' }}>*</span></label>
-          <input value={form.name} onChange={set('name')} placeholder="e.g. Classic Cotton T-Shirt" style={inputStyle} />
-        </div>
-
-        {/* Description */}
-        <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>Description</label>
-          <textarea value={form.description} onChange={set('description')} rows={3} placeholder="Provide details about material, size guide, or benefits..."
-            style={{ ...inputStyle, resize: 'vertical' }} />
-        </div>
-
-        {/* Price & Stock */}
-        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>Price (IDR) <span style={{ color: '#dc2626' }}>*</span></label>
-            <input type="number" min="0" value={form.price} onChange={set('price')} placeholder="150000" style={inputStyle} />
+        {/* Form Fields */}
+        <div className="space-y-4 font-mono text-xs">
+          <div>
+            <label className="block font-bold uppercase tracking-wider text-black mb-1">
+              TITLE / NAME <span className="text-retro-coral">*</span>
+            </label>
+            <input
+              value={form.name}
+              onChange={set('name')}
+              placeholder="e.g. VINTAGE OVERSIZED HOODIE"
+              className="w-full border-2 border-black p-3 bg-white text-black outline-none focus:bg-retro-cream"
+            />
           </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>Inventory Stock <span style={{ color: '#dc2626' }}>*</span></label>
-            <input type="number" min="0" value={form.stock} onChange={set('stock')} placeholder="25" style={inputStyle} />
+
+          <div>
+            <label className="block font-bold uppercase tracking-wider text-black mb-1">
+              SPECIFICATION / DETAILS
+            </label>
+            <textarea
+              value={form.description}
+              onChange={set('description')}
+              rows={3}
+              placeholder="Material, dimensions, provenance..."
+              className="w-full border-2 border-black p-3 bg-white text-black outline-none focus:bg-retro-cream resize-y"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block font-bold uppercase tracking-wider text-black mb-1">
+                PRICE (IDR) <span className="text-retro-coral">*</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={form.price}
+                onChange={set('price')}
+                placeholder="250000"
+                className="w-full border-2 border-black p-3 bg-white text-black outline-none focus:bg-retro-cream"
+              />
+            </div>
+            <div>
+              <label className="block font-bold uppercase tracking-wider text-black mb-1">
+                INVENTORY STOCK <span className="text-retro-coral">*</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={form.stock}
+                onChange={set('stock')}
+                placeholder="50"
+                className="w-full border-2 border-black p-3 bg-white text-black outline-none focus:bg-retro-cream"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-bold uppercase tracking-wider text-black mb-1">
+              CATEGORY CLASSIFICATION
+            </label>
+            <select
+              value={form.categoryId}
+              onChange={set('categoryId')}
+              className="w-full border-2 border-black p-3 bg-white text-black outline-none focus:bg-retro-cream"
+            >
+              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
         </div>
 
-        {/* Category */}
-        <div style={{ marginBottom: 28 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>Product Category</label>
-          <select value={form.categoryId} onChange={set('categoryId')} style={inputStyle}>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </div>
-
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', borderTop: '1px solid #f1f5f9', paddingTop: 20 }}>
-          <button onClick={onClose} disabled={loading} style={btn('#f1f5f9', '#475569')}>Cancel</button>
-          <button onClick={handleSubmit} disabled={loading} style={{ ...btn('#2563eb'), opacity: loading ? 0.7 : 1 }}>
-            {loading ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Product')}
+        {/* Modal Actions */}
+        <div className="flex justify-end gap-3 pt-6 mt-6 border-t-2 border-black">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="retro-btn bg-white text-black font-mono font-bold text-xs uppercase tracking-widest px-5 py-2.5"
+          >
+            CANCEL
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="retro-btn bg-black text-white font-mono font-bold text-xs uppercase tracking-widest px-5 py-2.5 disabled:opacity-50"
+          >
+            {loading ? 'PROCESSING...' : (isEdit ? 'SAVE MODIFICATIONS' : 'REGISTER ITEM')}
           </button>
         </div>
       </div>
@@ -243,122 +286,162 @@ export default function AdminProductsPage() {
         />
       )}
 
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      {/* Page Title */}
+      <div className="border-2 border-black bg-white p-6 retro-shadow mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Products</h2>
-          <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0' }}>Manage, add, and monitor stock for your store catalog.</p>
+          <div className="inline-block bg-black text-retro-amber font-mono text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest mb-2">
+            CATALOG // INVENTORY_CONTROL
+          </div>
+          <h2 className="font-extrabold text-3xl uppercase tracking-tight text-black m-0">
+            PRODUCT ARCHIVE
+          </h2>
+          <p className="font-mono text-xs text-gray-600 uppercase tracking-wide mt-1">
+            Manage merchandise, edit pricing, and control stock availability
+          </p>
         </div>
-        <button onClick={() => setModal({ mode: 'create' })} style={{ ...btn('#2563eb'), padding: '10px 20px' }}>
-          <span>+</span> New Product
+        <button
+          onClick={() => setModal({ mode: 'create' })}
+          className="retro-btn bg-black text-white font-mono font-bold text-xs uppercase tracking-widest px-5 py-3 cursor-pointer"
+        >
+          + NEW INVENTORY ITEM
         </button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div style={{
-        background: '#fff', padding: '16px 20px', border: '1px solid #e2e8f0',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.03)', marginBottom: 20, display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between'
-      }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: 8, flex: 1, minWidth: 260 }}>
+      <div className="border-2 border-black bg-white p-4 retro-shadow mb-6 flex flex-wrap items-center justify-between gap-4">
+        <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-[280px]">
           <input
             type="text"
-            placeholder="Search product by title..."
+            placeholder="SEARCH BY PRODUCT TITLE..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ ...inputStyle, padding: '8px 14px' }}
+            className="flex-1 border-2 border-black p-2.5 font-mono text-xs uppercase bg-retro-cream outline-none focus:bg-white"
           />
-          <button type="submit" style={btn('#0f172a')}>Search</button>
+          <button type="submit" className="retro-btn bg-black text-white font-mono font-bold text-xs uppercase tracking-widest px-4 py-2.5">
+            FIND
+          </button>
         </form>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#64748b' }}>Category:</span>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-black">CATEGORY:</span>
           <select
             value={selectedCategory}
             onChange={(e) => { setSelectedCategory(e.target.value); setPage(0); }}
-            style={{ ...inputStyle, width: 'auto', padding: '8px 14px' }}
+            className="border-2 border-black p-2.5 font-mono text-xs uppercase bg-white outline-none cursor-pointer"
           >
-            <option value="">All Categories</option>
+            <option value="">ALL CLASSIFICATIONS</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
       </div>
 
-      {/* Table Container */}
-      <div style={{ background: '#fff', border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
-              {['Item', 'Name & Info', 'Category', 'Price', 'Inventory', 'Actions'].map((h) => (
-                <th key={h} style={{ padding: '14px 20px', fontSize: 12, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, idx) => (
-                <TableRowSkeleton key={idx} cols={6} />
-              ))
-            ) : products.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding: 48, textAlign: 'center', color: '#94a3b8' }}>No products matching current filter.</td></tr>
-            ) : (
-              products.map((p) => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '12px 20px', width: 64 }}>
-                    {p.photoUrl
-                      ? <img src={p.photoUrl} alt={p.name} style={{ width: 48, height: 48, objectFit: 'cover', border: '1px solid #e2e8f0' }} />
-                      : <div style={{ width: 48, height: 48, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📦</div>
-                    }
-                  </td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{p.name}</div>
-                    <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2, maxWidth: 300, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {p.description || 'No description provided'}
-                    </div>
-                  </td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <span style={{ background: '#f1f5f9', color: '#475569', padding: '4px 10px', fontSize: 12, fontWeight: 600 }}>
-                      {p.categoryName || 'General'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px 20px', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{fmt(p.price)}</td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <span style={{
-                      background: p.stock > 10 ? '#10b98115' : p.stock > 0 ? '#f59e0b15' : '#ef444415',
-                      color: p.stock > 10 ? '#059669' : p.stock > 0 ? '#d97706' : '#dc2626',
-                      padding: '4px 10px', fontSize: 12, fontWeight: 700,
-                    }}>
-                      {p.stock > 0 ? `${p.stock} units` : 'Out of Stock'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={() => setModal({ mode: 'edit', data: p })} style={btn('#2563eb')}>Edit</button>
-                      <button onClick={() => setDeleteTargetId(p.id)} style={btn('#dc2626')}>Delete</button>
-                    </div>
+      {/* Table */}
+      <div className="border-2 border-black bg-white retro-shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse font-mono text-xs">
+            <thead>
+              <tr className="border-b-2 border-black bg-retro-cream text-left">
+                {['SPECIMEN', 'PRODUCT SPECIFICATION', 'CATEGORY', 'UNIT PRICE', 'STOCK_QTY', 'COMMANDS'].map((h) => (
+                  <th key={h} className="p-3.5 font-bold uppercase tracking-wider text-black">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, idx) => (
+                  <TableRowSkeleton key={idx} cols={6} />
+                ))
+              ) : products.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-12 text-center text-gray-500 uppercase tracking-widest">
+                    NO MATCHING PRODUCT RECORDS IN SYSTEM
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                products.map((p) => (
+                  <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <td className="p-3.5 w-16">
+                      {p.photoUrl ? (
+                        <img src={p.photoUrl} alt={p.name} className="w-12 h-12 object-cover border-2 border-black" />
+                      ) : (
+                        <div className="w-12 h-12 border-2 border-black bg-retro-cream flex items-center justify-center text-xl">
+                          📦
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-3.5">
+                      <div className="font-bold text-black uppercase">{p.name}</div>
+                      <div className="text-[10px] text-gray-500 truncate max-w-xs mt-0.5">
+                        {p.description || '// NO SPECIFICATION'}
+                      </div>
+                    </td>
+                    <td className="p-3.5">
+                      <span className="border border-black bg-white px-2 py-0.5 text-[10px] font-bold uppercase">
+                        {p.categoryName || 'GENERAL'}
+                      </span>
+                    </td>
+                    <td className="p-3.5 font-bold text-black">{fmt(p.price)}</td>
+                    <td className="p-3.5">
+                      <span className={`border border-black px-2 py-0.5 text-[10px] font-bold uppercase ${
+                        p.stock > 10 ? 'bg-blue-100 text-retro-blue' : p.stock > 0 ? 'bg-retro-amber text-black' : 'bg-retro-coral text-white'
+                      }`}>
+                        {p.stock > 0 ? `${p.stock} UNITS` : 'DEPLETED'}
+                      </span>
+                    </td>
+                    <td className="p-3.5">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setModal({ mode: 'edit', data: p })}
+                          className="retro-btn bg-retro-blue text-white font-bold text-[10px] uppercase px-2.5 py-1"
+                        >
+                          EDIT
+                        </button>
+                        <button
+                          onClick={() => setDeleteTargetId(p.id)}
+                          className="retro-btn bg-retro-coral text-white font-bold text-[10px] uppercase px-2.5 py-1"
+                        >
+                          DELETE
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', marginTop: 24 }}>
-          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ ...btn('#fff', '#475569'), border: '1px solid #cbd5e1' }}>&larr; Prev</button>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>Page {page + 1} of {totalPages}</span>
-          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1} style={{ ...btn('#fff', '#475569'), border: '1px solid #cbd5e1' }}>Next &rarr;</button>
+        <div className="flex justify-center items-center gap-3 mt-6 font-mono text-xs">
+          <button
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+            className="retro-btn bg-white text-black font-bold uppercase px-3 py-1.5 disabled:opacity-40"
+          >
+            &larr; PREV
+          </button>
+          <span className="font-bold text-black uppercase tracking-wider">
+            PAGE {page + 1} / {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+            className="retro-btn bg-white text-black font-bold uppercase px-3 py-1.5 disabled:opacity-40"
+          >
+            NEXT &rarr;
+          </button>
         </div>
       )}
 
       <ConfirmModal
         isOpen={Boolean(deleteTargetId)}
-        title="Delete Product"
-        message="Are you sure you want to delete this product? It will be immediately removed from the customer catalog."
+        title="CONFIRM DELETION"
+        message="Are you certain you want to purge this product? It will be permanently removed from public catalog access."
         isDanger={true}
-        confirmText="Delete Product"
-        cancelText="Cancel"
+        confirmText="CONFIRM PURGE"
+        cancelText="ABORT"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTargetId(null)}
       />
